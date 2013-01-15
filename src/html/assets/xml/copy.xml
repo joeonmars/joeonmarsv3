@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<copy>
+	<Text id="ui.button.ok"><![CDATA[OK]]></Text>
+
+	<Text id="footer.copyright"><![CDATA[&copy; Fan Jiang Design 2012]]></Text>
+	<Text id="footer.copyright.url"><![CDATA[#about]]></Text>
+
+	<Text id="section.title.home"><![CDATA[Home]]></Text>
+	<Text id="section.title.graphic-design"><![CDATA[Graphic Design]]></Text>
+	<Text id="section.title.side-design"><![CDATA[Side Design]]></Text>
+	<Text id="section.title.about"><![CDATA[About]]></Text>
+	<Text id="section.title.graphic-design-detail"><![CDATA[Graphic Design Detail]]></Text>
+	<Text id="section.title.side-design-detail"><![CDATA[Side Design Detail]]></Text>
+</copy>
