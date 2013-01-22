@@ -74,6 +74,11 @@ joeonmars.Utils.prototype.setCssTransform = function(element, property) {
 };
 
 
+joeonmars.Utils.prototype.getCssTransformProperty = function() {
+  return this.transformProperty.replace(/^\-/, '');
+};
+
+
 joeonmars.Utils.prototype.setDomScale = function(element, scale, disableCss3) {
   if(Modernizr.csstransforms && !disableCss3) {
     this.setCssTransform(element, 'scale(' + scale + ')');

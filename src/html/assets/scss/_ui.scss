@@ -33,3 +33,32 @@
 .scrollableY{
 	overflow-y: scroll !important;
 }
+
+.roundThumb{
+	position: absolute;
+	display: block;
+	cursor: pointer;
+	
+	>.outer, >.inner{
+		position: absolute;
+		@include border-radius(50%, 50%);
+	}
+
+	>.outer{
+		background: yellow;
+	}
+
+	>.inner{
+		overflow: hidden;
+		background-image: url('http://blog.iso50.com/wp-content/uploads/2010/06/article_image-image-article-2-450x450.jpg');
+		background-position: center center;
+	}
+
+	&:hover{
+		>.outer{
+		}
+
+		>.inner{
+		}
+	}
+}
