@@ -51,14 +51,44 @@
 	>.inner{
 		overflow: hidden;
 		background-image: url('http://weandthecolor.com/wp-content/uploads/2012/10/Geometry-a-Day-Artwork-by-Jeremiah-Shaw-and-Danny-Jones-43556.jpg');
-		background-position: center center;
+	}
+
+	>.symbol{
+		position: absolute;
+		left: -32px;
+		top: -32px;
+		pointer-events: none;
+
+		background-repeat: no-repeat;
+		background-position: center;
+
+		@include single-transition(opacity, .4s, ease-out);
+		opacity: .2;
+
+		//outline: 1px solid red;
 	}
 
 	&:hover{
-		>.outer{
+		>.symbol{
+			opacity: .8;
 		}
+	}
 
-		>.inner{
+	&.image{
+		>.symbol{
+			@include icon-sprite("thumb-symbol-image");
+		}
+	}
+
+	&.video{
+		>.symbol{
+			@include icon-sprite("thumb-symbol-video");
+		}
+	}
+
+	&.flash{
+		>.symbol{
+			@include icon-sprite("thumb-symbol-flash");
 		}
 	}
 }
