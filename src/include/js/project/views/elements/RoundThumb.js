@@ -57,15 +57,21 @@ joeonmars.views.elements.RoundThumb.prototype.deactivate = function() {
 joeonmars.views.elements.RoundThumb.prototype.setStatus = function(status, isInstant) {
   switch(status) {
     case joeonmars.views.elements.RoundThumb.Status.DEFAULT:
-      this.tweenTo(this.radius, this.radius * (1 - joeonmars.views.elements.RoundThumb.BorderRatio.DEFAULT), 100, isInstant);
+      var outerRad = this.radius;
+      var innerRad = outerRad * (1 - joeonmars.views.elements.RoundThumb.BorderRatio.DEFAULT);
+      var backgroundSize = innerRad * 2 * 1.5;
+      this.tweenTo(outerRad, innerRad, backgroundSize, isInstant);
       break;
 
     case joeonmars.views.elements.RoundThumb.Status.EXPANDED:
-      this.tweenTo(this.radius + 20, (this.radius + 20) * (1 - joeonmars.views.elements.RoundThumb.BorderRatio.EXPANDED), 80);
+      var outerRad = this.radius + 20;
+      var innerRad = outerRad * (1 - joeonmars.views.elements.RoundThumb.BorderRatio.EXPANDED);
+      var backgroundSize = innerRad * 2;
+      this.tweenTo(outerRad, innerRad, backgroundSize, isInstant);
       break;
 
     case joeonmars.views.elements.RoundThumb.Status.SHRINKED:
-      this.tweenTo(this.radius * .5, 0);
+      this.tweenTo(this.radius * .5, 0, 0, isInstant);
       break;
   }
 };
@@ -91,7 +97,7 @@ joeonmars.views.elements.RoundThumb.prototype.tweenTo = function(toOuterRad, toI
       var innerPos = - currentInnerRad;
 
       goog.style.setStyle(this.outerDom, {'width': outerDia + 'px', 'height': outerDia + 'px', 'left': outerPos + 'px', 'top': outerPos + 'px'});
-      goog.style.setStyle(this.innerDom, {'width': innerDia + 'px', 'height': innerDia + 'px', 'left': innerPos + 'px', 'top': innerPos + 'px', 'background-size': this.tweenRadiusObj.backgroundSize + '%'});
+      goog.style.setStyle(this.innerDom, {'width': innerDia + 'px', 'height': innerDia + 'px', 'left': innerPos + 'px', 'top': innerPos + 'px', 'background-size': this.tweenRadiusObj.backgroundSize + 'px'});
     },
     'onUpdateScope': this
   });
