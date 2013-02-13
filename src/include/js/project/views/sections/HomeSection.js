@@ -23,6 +23,9 @@ joeonmars.views.sections.HomeSection.prototype.init = function() {
 
 	var roundThumb = new joeonmars.views.elements.RoundThumb(200, new goog.math.Coordinate(600, 400), joeonmars.views.elements.RoundThumb.ClassName.FLASH);
 	goog.dom.appendChild(this.contentDom, roundThumb.domElement);
+
+	var uiSpinner = new joeonmars.views.elements.UISpinner('roundThumbLoader');
+	goog.dom.appendChild(this.contentDom, uiSpinner.domElement);
 };
 
 

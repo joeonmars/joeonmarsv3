@@ -82,6 +82,7 @@
 
     <script type="text/javascript" src="../include/js/project/fx/PageScroller.js"></script>
 
+    <script type="text/javascript" src="../include/js/project/views/elements/UISpinner.js"></script>
     <script type="text/javascript" src="../include/js/project/views/elements/RoundThumb.js"></script>
 
     <script type="text/javascript" src="../include/js/project/views/MainComponent.js"></script>

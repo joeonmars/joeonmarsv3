@@ -20,7 +20,7 @@ joeonmars.Utils = function() {
     } else if (goog.userAgent.WEBKIT) {
       return '-webkit';
     } else if (goog.userAgent.OPERA) {
-      return'-o';
+      return '-o';
     } else if (goog.userAgent.GECKO) {
       return '-moz';
     } else {
@@ -30,46 +30,54 @@ joeonmars.Utils = function() {
 
   // check css transform vendors
   this.transformProperty = this.cssVendor + '-transform';
+  this.transformStyleAttribute = this.cssVendor.replace(/^\-/, '') + 'Transform';
+  this.transformStyleAttribute[0].toUpperCase();
 
   // Modernizr's detection on this isnt correct...
   this.supportTransform3d = (function() {
     return ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix());
   })();
 
-  // Make it safe to use console.log in all browsers
-  (function(b){function c(){}for(var d="assert,count,debug,dir,dirxml,error,exception,group,groupCollapsed,groupEnd,info,log,timeStamp,profile,profileEnd,time,timeEnd,trace,warn".split(","),a;a=d.pop();){b[a]=b[a]||c}})((function(){try
-  {console.log();return window.console;}catch(err){return window.console={};}})());
-
-  if (console == undefined) {
-   console = {};
-   console.log = function ( str ) {
-     //window.alert( str );
-   }
-  }
-  
-  // usage: log('inside coolFunc',this,arguments);
-  // http://paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
-  window.log = function(){
-    if(self.debug){
-      log.history = log.history || [];   // store logs to an array for reference
-      log.history.push(arguments);
-      console.log( Array.prototype.slice.call(arguments) );
-    }
-  };
-
   // a zero size object for comparing with a goog.math.Size object
   this.zeroSize = new goog.math.Size(0, 0);
-  
-  this.soundIsEnabled = true;
-  this.allSounds = [];
 };
 goog.addSingletonGetter(joeonmars.Utils);
 
 
+joeonmars.Utils.prototype.addLeadingZero = function(integer) {
+  return (integer<10) ? '0'+integer : integer;
+};
+
+
 joeonmars.Utils.prototype.setCssTransform = function(element, property) {
   if(Modernizr.csstransforms) {
-    goog.style.setStyle(element, this.transformProperty.replace(/^\-/, ''), property);
+    element.style[this.transformStyleAttribute] = property;
     element.style['transform'] = property;
+  }
+};
+
+
+joeonmars.Utils.prototype.setDomScale = function(element, scale, disableCss3) {
+  if(Modernizr.csstransforms && !disableCss3) {
+    this.setCssTransform(element, 'scale(' + scale + ')');
+  }else {
+    goog.style.setStyle(element, 'zoom', scale * 100 + '%');
+  }
+};
+
+
+joeonmars.Utils.prototype.setRotation = function(element, angle) {
+  if(Modernizr.csstransforms) {
+    this.setCssTransform(element, 'rotate('+angle+'deg)');
+  }else {
+    var rotation;
+
+    if (angle >= 0) rotation = Math.PI * angle / 180;
+    else rotation = Math.PI * (360+angle) / 180;
+
+    var c = Math.cos(rotation);
+    var s = Math.sin(rotation);
+    element.style['filter'] = "progid:DXImageTransform.Microsoft.Matrix(M11="+c+",M12="+(-s)+",M21="+s+",M22="+c+",SizingMethod='auto expand')";
   }
 };
 
@@ -126,74 +134,37 @@ joeonmars.Utils.prototype.setDomPosition = function(element, x, y, disableCss3) 
 };
 
 
-joeonmars.Utils.prototype.fadeTo = function(element, sec, start, end, onComplete, onCompleteScope, onCompleteParams, disallowCss) {
-  this.fadeToWithDelay(element, null, sec, start, end, onComplete, onCompleteScope, onCompleteParams, disallowCss);
-};
+joeonmars.Utils.prototype.fadeTo = function(element, delaySec, sec, start, end, easing, onComplete, onCompleteScope, onCompleteParams) {
+  var tweenProp = {'opacity': start};
 
+  TweenMax.to(tweenProp, sec, {
+    'delay': delaySec,
+    'opacity': end,
+    'startAt': start,
+    'ease': easing || Strong.easeOut,
+    'onUpdate':function() {
+      goog.style.setOpacity(element, tweenProp['opacity']);
+    },
+    'onComplete': function() {
+      if(end === 1 && !Modernizr.opacity) goog.style.setOpacity(element, '');
 
-joeonmars.Utils.prototype.fadeToWithDelay = function(element, delaySec, sec, start, end, onComplete, onCompleteScope, onCompleteParams, disallowCss) {
-  if(!disallowCss && Modernizr.csstransitions && Modernizr.opacity) {
-
-    var fadeAnim = new goog.fx.css3.Transition(
-      element,
-      sec,
-      {'opacity': start},
-      {'opacity': end},
-      {property: 'opacity', duration: sec, timing: 'ease-out', delay: (delaySec || 0)}
-    );
-
-    goog.events.listenOnce(fadeAnim, goog.fx.Transition.EventType.FINISH, function(e) {
-      goog.style.setOpacity(element, '');
-      fadeAnim.dispose();
       if(goog.isFunction(onComplete)) {
         onComplete.apply(onCompleteScope || this, onCompleteParams || []);
       }
-    });
+    }
+  });
 
-    fadeAnim.play();
-
-  }else {
-
-    var tweenProp = {'opacity': start};
-
-    TweenMax.to(tweenProp, sec, {
-      'delay': delaySec,
-      'opacity': end,
-      'startAt': start,
-      'immediateRender': true,
-      'onUpdate':function() {
-        goog.style.setOpacity(element, tweenProp['opacity']);
-      },
-      'onComplete': function() {
-        if(end === 1) goog.style.setOpacity(element, '');
-
-        if(goog.isFunction(onComplete)) {
-          onComplete.apply(onCompleteScope || this, onCompleteParams || []);
-        }
-      }
-    });
-
-  }
+  return tweenProp;
 };
 
 
-joeonmars.Utils.prototype.fadeIn = function(element, sec, onComplete, onCompleteScope, onCompleteParams) {
-  this.fadeInWithDelay(element, null, sec, onComplete, onCompleteScope, onCompleteParams);
+joeonmars.Utils.prototype.fadeIn = function(element, delaySec, sec, easing, onComplete, onCompleteScope, onCompleteParams) {
+  return this.fadeTo(element, delaySec, sec, 0, 1, easing, onComplete, onCompleteScope, onCompleteParams);
 };
 
 
-joeonmars.Utils.prototype.fadeInWithDelay = function(element, delaySec, sec, onComplete, onCompleteScope, onCompleteParams) {
-  this.fadeToWithDelay(element, delaySec, sec, 0, 1, onComplete, onCompleteScope, onCompleteParams);
-};
-
-
-joeonmars.Utils.prototype.fadeOut = function(element, sec, onComplete, onCompleteScope, onCompleteParams) {
-  this.fadeOutWithDelay(element, null, sec, onComplete, onCompleteScope, onCompleteParams);
-};
-
-
-joeonmars.Utils.prototype.fadeOutWithDelay = function(element, delaySec, sec, onComplete, onCompleteScope, onCompleteParams) {
-  this.fadeToWithDelay(element, delaySec, sec, 1, 0, onComplete, onCompleteScope, onCompleteParams);
+joeonmars.Utils.prototype.fadeOut = function(element, delaySec, sec, easing, onComplete, onCompleteScope, onCompleteParams) {
+  return this.fadeTo(element, delaySec, sec, 1, 0, easing, onComplete, onCompleteScope, onCompleteParams);
 };
 
 
@@ -213,7 +184,20 @@ joeonmars.Utils.prototype.tweenToPosition = function(domElement, x, y, duration,
 
 joeonmars.Utils.prototype.getRandomCssColor = function() {
   return '#' + Math.floor(Math.random()*16777215).toString(16);
-}
+};
+
+
+joeonmars.Utils.prototype.getRandomString = function(length) {
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+  var string_length = length || 8;
+  var randomstring = '';
+  for (var i=0; i<string_length; i++) {
+    var rnum = Math.floor(Math.random() * chars.length);
+    randomstring += chars.substring(rnum,rnum+1);
+  }
+
+  return randomstring;
+};
 
 
 joeonmars.Utils.prototype.getUrlParam = function(name, url) {
