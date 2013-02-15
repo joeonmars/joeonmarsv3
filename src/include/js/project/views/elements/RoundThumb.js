@@ -31,8 +31,11 @@ joeonmars.views.elements.RoundThumb.prototype.create = function() {
   // create thumbnail dom structure
   this.domElement = goog.dom.createDom('a', 'roundThumb', [
     this.outerDom = goog.dom.createDom('div', 'outer'),
-    this.innerDom = goog.dom.createDom('div', 'inner'),
-    this.symbolDom = goog.dom.createDom('div', 'symbol')
+    this.innerDom = goog.dom.createDom('div', 'inner', [
+      this.innerOverlay = goog.dom.createDom('div', 'innerOverlay', [
+          this.symbolDom = goog.dom.createDom('div', 'symbol')
+        ])
+      ])
     ]);
 
   goog.dom.classes.add(this.domElement, this.thumbClassName);
@@ -147,8 +150,8 @@ joeonmars.views.elements.RoundThumb.prototype.tweenTo = function(toOuterRad, toI
 joeonmars.views.elements.RoundThumb.prototype.onAnimationFrame = function(now) {
   if(this.isExpanded) {
     if(goog.math.Coordinate.distance(this.backgroundPosition, this.toBackgroundPosition) > 1) {
-      this.backgroundPosition.x += (this.toBackgroundPosition.x - this.backgroundPosition.x) * .05;
-      this.backgroundPosition.y += (this.toBackgroundPosition.y - this.backgroundPosition.y) * .05;
+      this.backgroundPosition.x += (this.toBackgroundPosition.x - this.backgroundPosition.x) * .2;
+      this.backgroundPosition.y += (this.toBackgroundPosition.y - this.backgroundPosition.y) * .2;
 
       goog.style.setStyle(this.innerDom, 'background-position', this.backgroundPosition.x + 'px ' + this.backgroundPosition.y + 'px');
     }
@@ -167,14 +170,23 @@ joeonmars.views.elements.RoundThumb.prototype.onOver = function(e) {
 
 
 joeonmars.views.elements.RoundThumb.prototype.onOut = function(e) {
-  this.setStatus(joeonmars.views.elements.RoundThumb.Status.DEFAULT);
+  if(!goog.dom.contains(this.innerDom, e.relatedTarget)) {
+    this.setStatus(joeonmars.views.elements.RoundThumb.Status.DEFAULT);
+  }
 };
 
 
 joeonmars.views.elements.RoundThumb.prototype.onMove = function(e) {
-  if(e.target.className === 'inner' && this.isExpanded) {
-    this.toBackgroundPosition.x = (this.tweenRadiusObj.innerRad - Math.round(e.offsetX)) * .2;
-    this.toBackgroundPosition.y = (this.tweenRadiusObj.innerRad - Math.round(e.offsetY)) * .2;
+
+  if(this.isExpanded) {
+    var positionRelToScreen = goog.style.getPageOffset(this.domElement);
+    var mouseX = e.clientX - positionRelToScreen.x;
+    var mouseY = e.clientY - positionRelToScreen.y;
+    
+    //console.log(mouseX, mouseY);
+    
+    this.toBackgroundPosition.x = - mouseX * .2;
+    this.toBackgroundPosition.y = - mouseY * .2;
   }
 };
 
@@ -190,8 +202,8 @@ joeonmars.views.elements.RoundThumb.prototype.onResize = function(windowSize) {
 
 
 joeonmars.views.elements.RoundThumb.BorderRatio = {
-  DEFAULT: .05,
-  EXPANDED: .02
+  DEFAULT: .03,
+  EXPANDED: .01
 };
 
 

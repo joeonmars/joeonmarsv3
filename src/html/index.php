@@ -11,7 +11,7 @@
      <meta property="og:image"                content="http://www.joeonmars.com/assets/images/sharethumbnail.jpg">
      <meta property="og:title"                content="joeonmars / Joe Zhou's Portfolio">
      <meta property="og:description"          content="joeonmars / Joe Zhou's Portfolio Description"> 
-		<title>joeonmars / Joe Zhou's Portfolio</title>
+		<title>joeonmars / Interactive Developer, Designer</title>
 
     <script type="text/javascript">
       window.assetsPath = '<?php echo $assetsPath; ?>';
