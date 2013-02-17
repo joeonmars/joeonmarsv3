@@ -21,7 +21,7 @@ goog.inherits(joeonmars.views.sections.HomeSection, joeonmars.views.sections.Sec
 joeonmars.views.sections.HomeSection.prototype.init = function() {
 	goog.base(this, 'init');
 
-	var roundThumb = new joeonmars.views.elements.RoundThumb(250, new goog.math.Coordinate(600, 400), joeonmars.views.elements.RoundThumb.ClassName.FLASH);
+	var roundThumb = new joeonmars.views.elements.RoundThumb(200, new goog.math.Coordinate(600, 400), joeonmars.views.elements.RoundThumb.ClassName.FLASH);
 	goog.dom.appendChild(this.contentDom, roundThumb.domElement);
 
 	var uiSpinner = new joeonmars.views.elements.UISpinner(100,'red',.6);

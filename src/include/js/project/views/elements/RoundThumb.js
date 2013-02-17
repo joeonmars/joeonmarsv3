@@ -19,7 +19,15 @@ joeonmars.views.elements.RoundThumb = function(radius, position, thumbClassName)
   this.backgroundPosition = new goog.math.Coordinate();
   this.backgroundOrigin = new goog.math.Coordinate();
 
-  this.radius = radius || joeonmars.views.elements.RoundThumb.Radius.LARGE;
+  this.defaultInnerRad = null;
+  this.defaultOuterRad = null;
+  this.shrinkedInnerRad = null;
+  this.shrinkedOuterRad = null;
+  this.expandedInnerRad = null;
+  this.expandedOuterRad = null;
+  this.radius = radius || 200;
+  this.setSize(this.radius);
+
   this.position = position || new goog.math.Coordinate();
   this.status = null;
   this.isExpanded = false;
@@ -81,14 +89,37 @@ joeonmars.views.elements.RoundThumb.prototype.deactivate = function() {
 };
 
 
+joeonmars.views.elements.RoundThumb.prototype.setSize = function(radius) {
+  this.radius = Math.round(radius);
+
+  // default size
+  this.defaultOuterRad = this.radius;
+  this.defaultInnerRad = this.defaultOuterRad - 6;
+  if(this.defaultOuterRad % 2 !== this.defaultInnerRad % 2) {
+    this.defaultInnerRad -= 1;
+  }
+
+  // shrinked size
+  this.shrinkedOuterRad = this.radius * .5;
+  this.shrinkedInnerRad = 0;
+
+  // expanded size
+  this.expandedOuterRad = this.radius + 20;
+  this.expandedInnerRad = this.expandedOuterRad - 2;
+  if(this.expandedOuterRad % 2 !== this.expandedInnerRad % 2) {
+    this.expandedInnerRad -= 1;
+  }
+};
+
+
 joeonmars.views.elements.RoundThumb.prototype.setStatus = function(status, isInstant) {
   if(this.status === status) return;
   else this.status = status;
 
   switch(this.status) {
     case joeonmars.views.elements.RoundThumb.Status.DEFAULT:
-      var outerRad = this.radius;
-      var innerRad = Math.min(outerRad - 1, outerRad * (1 - joeonmars.views.elements.RoundThumb.BorderRatio.DEFAULT));
+      var outerRad = this.defaultOuterRad;
+      var innerRad = this.defaultInnerRad;
       var backgroundSize = innerRad * 2 * 1.5;
       var backgroundX = - (backgroundSize - innerRad * 2) * .5;
       var backgroundY = - (backgroundSize / this.backgroundImgSize.aspectRatio() - innerRad * 2) * .5;
@@ -102,23 +133,28 @@ joeonmars.views.elements.RoundThumb.prototype.setStatus = function(status, isIns
       break;
 
     case joeonmars.views.elements.RoundThumb.Status.EXPANDED:
-      var outerRad = this.radius + 20;
-      var innerRad = Math.min(outerRad - 1, outerRad * (1 - joeonmars.views.elements.RoundThumb.BorderRatio.EXPANDED));
+      var outerRad = this.expandedOuterRad;
+      var innerRad = this.expandedInnerRad;
       var backgroundSize = innerRad * 2;
-      var backgroundX = - this.mouseOffsetFromOrigin.x;
-      var backgroundY = - this.mouseOffsetFromOrigin.y;
 
-      this.backgroundOrigin.x = -(backgroundSize - outerRad * 2) * .5;
-      this.backgroundOrigin.y = -(backgroundSize / this.backgroundImgSize.aspectRatio() - outerRad * 2) * .5;
+      this.backgroundOrigin.x = - (backgroundSize - outerRad * 2) * .5;
+      this.backgroundOrigin.y = - (backgroundSize / this.backgroundImgSize.aspectRatio() - outerRad * 2) * .5;
+
+      var backgroundX = this.backgroundOrigin.x - this.mouseOffsetFromOrigin.x;
+      var backgroundY = this.backgroundOrigin.y - this.mouseOffsetFromOrigin.y;
+
       this.isExpanded = false;
 
       this.tweenTo(outerRad, innerRad, backgroundSize, backgroundX, backgroundY, this.onExpanded, isInstant);
       break;
 
     case joeonmars.views.elements.RoundThumb.Status.SHRINKED:
+      var outerRad = this.shrinkedOuterRad;
+      var innerRad = this.shrinkedInnerRad;
+
       this.isExpanded = false;
 
-      this.tweenTo(this.radius * .5, 0, 0, 0, 0, null, isInstant);
+      this.tweenTo(outerRad, innerRad, 0, 0, 0, null, isInstant);
 
       // stop animation loop for background movement
       goog.fx.anim.unregisterAnimation(this);
@@ -131,8 +167,6 @@ joeonmars.views.elements.RoundThumb.prototype.tweenTo = function(toOuterRad, toI
   TweenMax.killTweensOf(this.tweenObj);
 
   var duration = (isInstant === true) ? 0 : .5;
-  var offsetX = this.mouseOffsetFromOrigin.x;
-  var offsetY = this.mouseOffsetFromOrigin.y;
 
   this.tweener = TweenMax.to(this.tweenObj, duration, {
     outerRad: toOuterRad,
@@ -215,7 +249,7 @@ joeonmars.views.elements.RoundThumb.prototype.onMove = function(e) {
   this.mouseOffsetFromOrigin.y = mouseY * .2;
 
   if(TweenMax.isTweening(this.tweenObj)) {
-    this.tweener.updateTo({backgroundX: - this.mouseOffsetFromOrigin.x, backgroundY: - this.mouseOffsetFromOrigin.y});
+    this.tweener.updateTo({backgroundX: this.backgroundOrigin.x - this.mouseOffsetFromOrigin.x, backgroundY: this.backgroundOrigin.y - this.mouseOffsetFromOrigin.y});
   }
 };
 
@@ -227,12 +261,6 @@ joeonmars.views.elements.RoundThumb.prototype.onClick = function(e) {
 
 joeonmars.views.elements.RoundThumb.prototype.onResize = function(windowSize) {
 
-};
-
-
-joeonmars.views.elements.RoundThumb.BorderRatio = {
-  DEFAULT: .03,
-  EXPANDED: .01
 };
 
 
