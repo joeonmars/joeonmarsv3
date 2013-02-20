@@ -1,8 +1,0 @@
-AuthUserFile /var/www/html/motorola/.htpasswd
-AuthGroupFile /dev/null
-AuthName "Password Protected Area"
-AuthType Basic
-
-<limit GET POST>
-require valid-user
-</limit>

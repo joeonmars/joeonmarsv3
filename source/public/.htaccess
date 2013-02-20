@@ -1,0 +1,6 @@
+Header set Access-Control-Allow-Origin *
+
+AddType application/x-shockwave-flash .swf
+AddType video/ogg ogv
+AddType video/webm webm
+AddType video/mp4 mp4
