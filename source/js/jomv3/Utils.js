@@ -187,19 +187,6 @@ jomv3.Utils.prototype.getRandomCssColor = function() {
 };
 
 
-jomv3.Utils.prototype.getRandomString = function(length) {
-  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-  var string_length = length || 8;
-  var randomstring = '';
-  for (var i=0; i<string_length; i++) {
-    var rnum = Math.floor(Math.random() * chars.length);
-    randomstring += chars.substring(rnum,rnum+1);
-  }
-
-  return randomstring;
-};
-
-
 jomv3.Utils.prototype.getUrlParam = function(name, url) {
   name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
   var regexS = "[\\?&]"+name+"=([^&#]*)";
