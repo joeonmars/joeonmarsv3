@@ -1,3 +1,6 @@
 /joeonmarsv3.sublime-project
 /joeonmarsv3.sublime-workspace
 .DS_Store
+/source/js/jomv3-main-base.js
+/source/js/jomv3-popupflash-base.js
+/source/js/jomv3-unsupported-base.js
