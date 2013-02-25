@@ -16,6 +16,14 @@ jomv3.DevelopmentBuilder = function () {
 		output: 'js/jomv3-main-base.js'
 	}));
 
+	// Popup-Flash Closure Dependencies
+	this.addPhase(new breel.build.ClosureDevelopmentPhase({
+		input: 'js/jomv3/',
+		closureLibrary: 'js/goog/',
+		require: 'jomv3.popupflash',
+		output: 'js/jomv3-popupflash-base.js'
+	}));
+
 	// Unsupported Closure Dependencies
 	this.addPhase(new breel.build.ClosureDevelopmentPhase({
 		input: 'js/jomv3/',

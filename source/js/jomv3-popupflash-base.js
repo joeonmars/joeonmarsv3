@@ -36,4 +36,4 @@ goog.addDependency("../jomv3/views/sections/HomeSection.js", ["joeonmars.views.s
 goog.addDependency("../jomv3/views/sections/Section.js", ["joeonmars.views.sections.Section"], ["goog.array","goog.dom","goog.events.EventTarget","goog.string","goog.style","joeonmars.events.SectionEvent"]);
 goog.addDependency("../jomv3/views/sections/SideDesignSection.js", ["joeonmars.views.sections.SideDesignSection"], ["goog.array","goog.dom","goog.events.EventTarget","goog.string","goog.style","joeonmars.events.SectionEvent"]);
 
-goog.require('jomv3.main');
+goog.require('jomv3.popupflash');

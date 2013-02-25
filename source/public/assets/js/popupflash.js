@@ -13,5 +13,5 @@ console.info('Running in development (uncompiled) mode...');
 	}
 
 	installExternalScript('assets/js/source/goog/base.js');
-	installExternalScript('assets/js/source/jomv3-unsupported-base.js');
+	installExternalScript('assets/js/source/jomv3-popupflash-base.js');
 })();

@@ -1,19 +1,5 @@
 <?php
 
-$HOST_URL = $_SERVER['SERVER_NAME'];
-$CDN_URL_MAP = array(
-    "joeonmars.com" => "",
-    "joeonmarsv3.com" => "",
-);
-$CDN_URL = '';
-
- foreach ($CDN_URL_MAP as $host => $cdn) {
- 	if ($host == $HOST_URL) {
- 		$CDN_URL = $cdn;
- 		break;
- 	}
- }
-
 ?>
 
 <!DOCTYPE html>

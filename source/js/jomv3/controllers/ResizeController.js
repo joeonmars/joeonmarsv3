@@ -26,7 +26,7 @@ goog.inherits(joeonmars.controllers.ResizeController, goog.events.EventTarget);
 
 
 joeonmars.controllers.ResizeController.prototype.init = function() {
-  // listen for window resize event
+  // listen to window event
   goog.events.listen(this.viewportSizeMonitor, goog.events.EventType.RESIZE, this.onResize, false, this);
   goog.events.listen(goog.dom.getWindow(), 'orientationchange', this.onOrientationChange, false, this);
 

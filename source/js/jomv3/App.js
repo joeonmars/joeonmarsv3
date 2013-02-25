@@ -3,6 +3,7 @@ goog.provide('jomv3.App');
 goog.require('goog.events');
 goog.require('goog.userAgent');
 goog.require('goog.math');
+goog.require('goog.window');
 goog.require('jomv3.controllers.AssetsController');
 goog.require('jomv3.controllers.NavigationController');
 goog.require('jomv3.views.elements.RoundThumb');
@@ -48,6 +49,31 @@ jomv3.App = function () {
 	}, this));
 
 	loaderQueue.load();
+
+	//
+	goog.events.listen(roundThumb.domElement, 'click', function(e) {
+		var viewportSize = goog.dom.getViewportSize();
+
+		var swftitle = 'Pacmad Level Editor';
+		var swfurl = jomv3.ASSETS_PATH + 'flash/projects/pacmad/level_editor.swf';
+		var swfwidth = 640;
+		var swfheight = 740;
+		var swfversion = '9.0.0';
+		var link = 'popup-flash.php'+'?swftitle='+swftitle+'&swfurl='+swfurl+'&swfwidth='+swfwidth+'&swfheight='+swfheight+'&swfversion='+swfversion;
+		goog.window.open(link, {
+			'width': swfwidth,
+			'height': swfheight + 40,
+			'left': (window.screenLeft || window.screenX) + (viewportSize.width - swfwidth)/2,
+			'top': (window.screenTop || window.screenY) + (viewportSize.height - swfheight)/2,
+			'toolbar': false,
+			'scrollbars': false,
+			'statusbar': false,
+			'menubar': false,
+			'resizable': false
+		});
+	}, false, this);
+
+	//
 };
 
 

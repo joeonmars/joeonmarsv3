@@ -54,6 +54,6 @@ def countFiles(_path, _file_format):
 	print 'Number of charachters: ' + str(num_chars)
 	print '------------------------'
 
-countFiles('../source/js/kc/', '.js')
+countFiles('../source/js/jomv3/', '.js')
 countFiles('../source/scss/', '.scss')
 countFiles('../source/public/assets/images/', '@2x')
