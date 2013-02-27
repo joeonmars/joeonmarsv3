@@ -5,6 +5,7 @@ goog.require('goog.dom.classes');
 goog.require('goog.fx.css3');
 goog.require('goog.fx.Transition');
 goog.require('goog.style');
+goog.require('goog.style.cursor');
 goog.require('goog.userAgent');
 goog.require('goog.math');
 
@@ -199,35 +200,6 @@ jomv3.Utils.prototype.getUrlParam = function(name, url) {
 };
 
 
-jomv3.Utils.prototype.parseBatchAssets = function(queueData) {
-  goog.array.forEachRight(queueData, function(val) {
-    var batch = val["batch"];
-    if(batch) {
-      goog.array.remove(queueData, val);
-
-      var i, obj;
-      for(i=batch[0]; i<=batch[1]; ++i) {
-        obj = {'src':val['src']+val['fileid']+i+val['filetype'], 'id': val['fileid']+i};
-        queueData.push(obj);
-      }
-    }
-  }, this);
-
-  return queueData;
-};
-
-
-jomv3.Utils.prototype.getBatchAssets = function(prefix, numRange, aPreloader) {
-  var assets = [];
-  var i;
-  var preloader = preloader ? preloader : jomv3.GET_VAR('mainPreloader').preloader;
-  for(i=numRange[0]; i<=numRange[1]; ++i) {
-    assets.push(preloader.getResult(prefix+i));
-  }
-  return assets;
-};
-
-
 jomv3.Utils.prototype.hasNoSize = function(element) {
   return goog.math.Size.equals(goog.style.getSize(element), this.zeroSize);
 };
@@ -246,4 +218,41 @@ jomv3.Utils.prototype.restoreImageSize = function(img) {
     img.width = img.naturalWidth;
     img.height = img.naturalHeight;  
   }
+};
+
+
+jomv3.Utils.prototype.addDraggableCursor = function(domElement) {
+  var originalCursorStyle = goog.style.getStyle(domElement, 'cursor');
+
+  var draggableStyleStr = goog.style.cursor.getDraggableCursorStyle(jomv3.ASSETS_PATH+'cursor/');
+  var draggingStyleStr = goog.style.cursor.getDraggingCursorStyle(jomv3.ASSETS_PATH+'cursor/');
+  
+  goog.style.setStyle(domElement, 'cursor', draggableStyleStr);
+
+  // key of mouse up handler for removal 
+  var mouseUp = null;
+
+  // key of mouse down handler for removal 
+  var mouseDown = goog.events.listen(domElement, 'mousedown', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    goog.style.setStyle(domElement, 'cursor', draggingStyleStr);
+
+    mouseUp = goog.events.listenOnce(window, 'mouseup', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      goog.style.setStyle(domElement, 'cursor', draggableStyleStr);
+    });
+  });
+
+  var _remove = function() {
+    goog.events.unlistenByKey(mouseUp);
+    goog.events.unlistenByKey(mouseDown);
+    goog.style.setStyle(domElement, 'cursor', originalCursorStyle);
+  };
+
+  // return a function for later events removal
+  return {remove: _remove};
 };

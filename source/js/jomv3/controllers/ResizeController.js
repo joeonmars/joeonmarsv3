@@ -1,4 +1,4 @@
-goog.provide('joeonmars.controllers.ResizeController');
+goog.provide('jomv3.controllers.ResizeController');
 
 goog.require('goog.dom');
 goog.require('goog.dom.classes');
@@ -7,84 +7,69 @@ goog.require('goog.events.EventType');
 goog.require('goog.events.EventTarget');
 goog.require('goog.math.Size');
 goog.require('goog.style');
+goog.require('goog.userAgent');
 
 /**
  * @constructor
  */
 
-joeonmars.controllers.ResizeController = function() {
+jomv3.controllers.ResizeController = function() {
   goog.base(this);
 
   this.currentOrientation = '';
   this.contentWrapperDom = goog.dom.getElement('content-wrapper');
 
   this.viewportSizeMonitor = new goog.dom.ViewportSizeMonitor();
-  this.pageSize = null;
-  this.windowSize = null;
+  this.windowSize = this.viewportSizeMonitor.getSize();
+
+  this.resizables = [];
+
+  this.minSize = new goog.math.Size(600, 600);
+  this.rotatedMinSize = this.minSize.clone();
 };
-goog.inherits(joeonmars.controllers.ResizeController, goog.events.EventTarget);
+goog.inherits(jomv3.controllers.ResizeController, goog.events.EventTarget);
+goog.addSingletonGetter(jomv3.controllers.ResizeController);
 
 
-joeonmars.controllers.ResizeController.prototype.init = function() {
-  // listen to window event
+jomv3.controllers.ResizeController.prototype.init = function() {
+  // listen for window resize event
   goog.events.listen(this.viewportSizeMonitor, goog.events.EventType.RESIZE, this.onResize, false, this);
-  goog.events.listen(goog.dom.getWindow(), 'orientationchange', this.onOrientationChange, false, this);
+  goog.events.listen(goog.dom.getWindow(), 'orientationchange', this.onResize, false, this);
 
-  // sim resize on start up
-  this.onResize();
-};
-
-
-joeonmars.controllers.ResizeController.prototype.onResize = function(e) {
-	this.windowSize = this.viewportSizeMonitor.getSize() || goog.dom.getViewportSize();
-
-  this.pageSize = this.windowSize.clone();
-  var minSize = joeonmars.controllers.ResizeController.MIN_SIZE;
-  if(this.pageSize.width < minSize.width) this.pageSize.width = minSize.width;
-  if(this.pageSize.height < minSize.height) this.pageSize.height = minSize.height;
-
-  // if window size is smaller than min site size,
-  // show the native scroller
-  if(this.windowSize.width < minSize.width) {
-    goog.dom.classes.add(document.body, 'scrollableX');
-  }else {
-    goog.dom.classes.remove(document.body, 'scrollableX');
-  }
-
-  if(this.windowSize.height < minSize.height) {
-    goog.dom.classes.add(document.body, 'scrollableY');
-  }else {
-    goog.dom.classes.remove(document.body, 'scrollableY');
-  }
-
-  // resize...
-  var sectionController = joeonmars.GET_VAR('sectionController');
-  if(sectionController) sectionController.onResize(this.pageSize);
-};
-
-
-joeonmars.controllers.ResizeController.prototype.onOrientationChange = function(e) {
-  var orientation;
-  switch(e.currentTarget.orientation) {
-    case 0:
-    case 180:
-    orientation = 'portrait';
-    break;
-
-    case 90:
-    case -90:
-    orientation = 'landscape';
-    break;
-
-    default:
-    break;
-  }
-
-  if(this.currentOrientation !== orientation) {
+  // auto trigger orientation change for mobile
+  if(jomv3.isTouchAndMobile) {
     this.onResize();
-    this.currentOrientation = orientation;
   }
 };
 
 
-joeonmars.controllers.ResizeController.MIN_SIZE = new goog.math.Size(1024, 640);
+jomv3.controllers.ResizeController.prototype.registerResizableElement = function(element, index) {
+  this.unregisterResizableElement(element);
+  goog.array.insertAt(this.resizables, element, index || this.resizables.length-1);
+
+  element.onResize(this.windowSize);
+};
+
+
+jomv3.controllers.ResizeController.prototype.unregisterResizableElement = function(element) {
+  goog.array.remove(this.resizables, element);
+};
+
+
+jomv3.controllers.ResizeController.prototype.getResizableElementIndex = function(element) {
+  return goog.array.indexOf(this.resizables, element);
+};
+
+
+jomv3.controllers.ResizeController.prototype.onResize = function(e) {
+  this.windowSize = this.viewportSizeMonitor.getSize();
+
+  this.windowSize.width = Math.max(this.windowSize.width, this.rotatedMinSize.width);
+  this.windowSize.height = Math.max(this.windowSize.height, this.rotatedMinSize.height);
+
+  goog.array.forEach(this.resizables, function(element) {
+    if(element.onResize) {
+      element.onResize(this.windowSize);
+    }
+  }, this);
+};

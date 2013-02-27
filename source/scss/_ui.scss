@@ -11,21 +11,6 @@
   height: 100%;
 }
 
-.draggable{
-	 cursor: hand;
-	 cursor: grab;
-	 cursor: -moz-grab;
-	 cursor: -webkit-grab;
-	 cursor: url('../cursor/openhand.cur'), default !important;
-
-	 &:active{
-	 	 cursor: grabbing;
-		 cursor: -moz-grabbing;
-		 cursor: -webkit-grabbing;
-		 cursor: url('../cursor/closehand.cur'), default !important;
-	 }
-}
-
 .scrollableX{
 	overflow-x: scroll !important;
 }

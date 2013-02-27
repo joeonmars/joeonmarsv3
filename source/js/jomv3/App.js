@@ -74,6 +74,8 @@ jomv3.App = function () {
 	}, false, this);
 
 	//
+	var draggableCursor = jomv3.utils.addDraggableCursor(document.body);
+	//draggableCursor.remove();
 };
 
 

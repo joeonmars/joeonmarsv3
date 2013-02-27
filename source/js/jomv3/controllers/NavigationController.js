@@ -21,12 +21,13 @@ jomv3.controllers.NavigationController = function(){
   this.linkBeforeLoaded = null;
   this.mapLinks = [];
 
-  // immediately fire an event for the current location
   var input = goog.dom.createDom('input');
   var iframe = goog.dom.createDom('iframe');
   this.navHistory = new goog.History(false, null, input, iframe);
 
   goog.events.listen(this.navHistory, goog.history.EventType.NAVIGATE, this.onNavigate, false, this);
+  
+  // immediately fire an event for the current location
   this.navHistory.setEnabled(true);
 };
 goog.inherits(jomv3.controllers.NavigationController, goog.events.EventTarget);
