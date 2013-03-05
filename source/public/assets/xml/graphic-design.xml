@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<graphic-design>
+	<Text id="designwork1.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork1.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork1.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork1.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork1.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork1.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork1.work1.title"><![CDATA[Work1 Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+	<Text id="designwork1.work1.description"><![CDATA[Work1 Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork1.work2.title"><![CDATA[Work2 Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+	<Text id="designwork1.work2.description"><![CDATA[Work2 Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork2.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork2.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork2.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork2.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork2.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork2.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork3.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork3.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork3.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork3.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork3.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork3.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork4.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork4.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork4.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork4.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork4.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork4.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork5.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork5.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork5.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork5.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork5.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork5.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork6.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork6.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork6.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork6.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork6.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork6.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork7.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork7.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork7.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork7.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork7.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork7.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork8.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork8.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork8.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork8.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork8.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork8.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork9.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork9.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork9.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork9.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork9.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork9.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+
+	<Text id="designwork10.title"><![CDATA[Hey Hey My Yo Yo]]></Text>
+	<Text id="designwork10.category"><![CDATA[Graphic Design]]></Text>
+	<Text id="designwork10.date"><![CDATA[August 2012]]></Text>
+	<Text id="designwork10.organization"><![CDATA[Self]]></Text>
+	<Text id="designwork10.tools"><![CDATA[Photoshop CS5; Acrylics]]></Text>
+	<Text id="designwork10.description"><![CDATA[Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum]]></Text>
+</graphic-design>

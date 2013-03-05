@@ -15,6 +15,13 @@ jomv3.DevelopmentBuilder = function () {
 		require: 'jomv3.main',
 		output: 'js/jomv3-base.js'
 	}));
+
+	this.addPhase(new breel.build.ClosureDevelopmentPhase({
+		input: 'js/jomv3/',
+		closureLibrary: 'js/goog/',
+		require: 'jomv3.popupflash',
+		output: 'js/jomv3-popupflash-base.js'
+	}));
 };
 
 goog.inherits(jomv3.DevelopmentBuilder, breel.build.Builder);

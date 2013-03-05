@@ -1,0 +1,12 @@
+{
+    "id": "link",
+    "about": "/about",
+    "demo": "/demo",
+    "home": "/home",
+    "commercial": "/commercial",
+    "interactive": "/interactive",
+    "side-projects": "/side-projects",
+    "easter-eggs": "/easter-eggs",
+    "qiuqiu": "/easter-eggs/hamster",
+    "bingbing": "/easter-eggs/hamster"
+}
