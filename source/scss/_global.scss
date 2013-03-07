@@ -65,3 +65,7 @@ a{
 .shadowText{
   @include single-text-shadow(rgba(0,0,0,.3), 0px, 1px, 0px);
 }
+
+.round{
+  @include border-radius(50%, 50%);
+}

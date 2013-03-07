@@ -7,6 +7,7 @@ goog.require('jomv3.controllers.AssetsController');
 goog.require('jomv3.controllers.NavigationController');
 goog.require('jomv3.views.elements.RoundThumb');
 goog.require('jomv3.views.elements.UISpinner');
+goog.require('jomv3.fx.FermatSpiral');
 
 
 jomv3.App = function () {
@@ -25,6 +26,23 @@ jomv3.App = function () {
 
 	var uiSpinner = new jomv3.views.elements.UISpinner(100,'red',.6);
 	goog.dom.appendChild(document.body, uiSpinner.domElement);
+
+	var fermatSpiral = new jomv3.fx.FermatSpiral();
+	var dotsInfo = fermatSpiral.generate(100, jomv3.fx.FermatSpiral.GOLDEN_ANGLE, 24, 12, 20);
+
+	var dotsWrapper = goog.dom.createDom('div');
+	goog.style.setStyle(dotsWrapper, 'position', 'absolute');
+	goog.dom.appendChild(document.body, dotsWrapper);
+	goog.style.setPosition(dotsWrapper, 300, 300);
+
+	goog.array.forEach(dotsInfo, function(dotInfo, index) {
+		var dot = goog.dom.createDom('div', 'round');
+		var dotX = dotInfo.x - dotInfo.radius;
+		var dotY = dotInfo.y - dotInfo.radius;
+		var dotSize = dotInfo.diameter;
+		goog.style.setStyle(dot, {'position': 'absolute', 'left': dotX+'px', 'top': dotY+'px', 'width': dotSize+'px', 'height': dotSize+'px', 'background': jomv3.utils.getRandomCssColor()});
+		goog.dom.appendChild(dotsWrapper, dot);
+	}, this);
 
 	//
 	var manifest = [
