@@ -3,7 +3,7 @@
 
 # Set this to the root of your project when deployed:
 http_path = "/"
-css_dir = "../public/assets/css/generated"
+css_dir = "../public/assets/css"
 sass_dir = ""
 images_dir = "../public/assets/images"
 javascripts_dir = "../public/assets/js"

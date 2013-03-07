@@ -9,9 +9,9 @@ console.info('Running in development (uncompiled) mode...');
 
 (function() {
 	function installExternalScript (url) {
-		document.write('<script type="text/javascript" src="/' + url + '"></' + 'script>');
+		document.write('<script type="text/javascript" src="' + url + '"></' + 'script>');
 	}
 
 	installExternalScript('assets/js/source/goog/base.js');
-	installExternalScript('assets/js/source/jomv3-main-base.js');
+	installExternalScript('assets/js/source/jomv3-base.js');
 })();

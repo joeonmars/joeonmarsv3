@@ -8,20 +8,19 @@ jomv3.DevelopmentBuilder = function () {
 		destinationPath: 'source/'
 	});
 
-	// Main Closure Dependencies
+	// Closure Dependencies
 	this.addPhase(new breel.build.ClosureDevelopmentPhase({
 		input: 'js/jomv3/',
 		closureLibrary: 'js/goog/',
 		require: 'jomv3.main',
-		output: 'js/jomv3-main-base.js'
+		output: 'js/jomv3-base.js'
 	}));
 
-	// Unsupported Closure Dependencies
 	this.addPhase(new breel.build.ClosureDevelopmentPhase({
 		input: 'js/jomv3/',
 		closureLibrary: 'js/goog/',
-		require: 'jomv3.unsupported',
-		output: 'js/jomv3-unsupported-base.js'
+		require: 'jomv3.popupflash',
+		output: 'js/jomv3-popupflash-base.js'
 	}));
 };
 

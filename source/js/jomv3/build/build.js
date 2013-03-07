@@ -16,7 +16,7 @@ require('../../breel/build').init({
 		},
 		release: {
 			className: 'jomv3.ReleaseBuilder',
-			additionalDeps: 'source/jomv3/jomv3-deps.js',
+			additionalDeps: 'source/js/jomv3-deps.js',
 			description: 'Create a release build'
 		}
 	}
