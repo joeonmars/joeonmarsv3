@@ -2,6 +2,7 @@
 	<head>
 		<title>Joe on Mars v3</title>
 
+		<link rel="icon" type="image/x-icon" href="assets/images/favicon.ico"/>
 		<link rel="stylesheet" href="assets/css/main.css" media="screen"/>
 
 		<script type="text/javascript" src="assets/js/thirdparty/consoleshim.min.js"></script>

@@ -38,6 +38,7 @@
 
 		<title>Joe on Mars - Now Playing "<?php echo $swftitle; ?>"</title>
 
+		<link rel="icon" type="image/x-icon" href="assets/images/favicon.ico"/>
 		<link rel="stylesheet" href="assets/css/popup-flash.css" media="screen"/>
 		
 		<script type="text/javascript" src="assets/js/popupflash.js"></script>
