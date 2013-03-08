@@ -23,4 +23,4 @@ jomv3.main = function (assetsUrl) {
 	jomv3.prototype = new jomv3.App();
 };
 
-goog.exportProperty(jomv3, 'main', jomv3.main);
+goog.exportSymbol('jomv3.main', jomv3.main);
