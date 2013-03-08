@@ -16,6 +16,7 @@ goog.addDependency("../jomv3/fx/FermatSpiral.js", ["jomv3.fx.FermatSpiral"], [])
 goog.addDependency("../jomv3/fx/PageScroller.js", ["joeonmars.fx.PageScroller"], ["goog.dom","goog.dom.classes","goog.events.EventTarget","goog.math.Size","goog.object","goog.style","goog.Timer","joeonmars.events.ScrollEvent"]);
 goog.addDependency("../jomv3/main.js", ["jomv3.main"], ["goog.userAgent.product","jomv3.App","jomv3.Utils"]);
 goog.addDependency("../jomv3/popupflash.js", ["jomv3.popupflash"], ["goog.dom","goog.dom.ViewportSizeMonitor","goog.style","goog.ui.media.FlashObject"]);
+goog.addDependency("../jomv3/templates/simple.js", ["examples.simple"], ["soy","soydata"]);
 goog.addDependency("../jomv3/unsupported.js", ["jomv3.unsupported"], ["goog.userAgent"]);
 goog.addDependency("../jomv3/utils.js", ["jomv3.Utils"], ["goog.dom","goog.dom.classes","goog.fx.css3","goog.fx.Transition","goog.style","goog.style.cursor","goog.userAgent","goog.math"]);
 goog.addDependency("../jomv3/views/artworks/Artwork.js", ["joeonmars.views.artworks.Artwork"], ["goog.array","goog.dom","goog.dom.classes","goog.string","goog.style"]);

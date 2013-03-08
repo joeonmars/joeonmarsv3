@@ -8,5 +8,5 @@ goog.require('soydata');
 
 
 examples.simple.helloWorld = function(opt_data, opt_ignored) {
-  return 'Hello world!';
+  return 'Hello ' + soy.$$escapeHtml(opt_data.name['firstName']) + ' ' + soy.$$escapeHtml(opt_data.name['lastName']) + '!' + soy.$$escapeHtml(BREAK) + 'You are ' + soy.$$escapeHtml(opt_data.age) + ' years old.';
 };
