@@ -14,7 +14,7 @@ goog.require('jomv3.fx.FermatSpiral');
 jomv3.App = function () {
 
 	// app assets
-	jomv3.ExternalAssets = {};
+	jomv3.ExternalAssets = {}; 
 
 	// test
 	var navController = jomv3.controllers.NavigationController.getInstance();

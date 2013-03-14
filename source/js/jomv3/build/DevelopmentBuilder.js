@@ -1,5 +1,6 @@
 goog.require('breel.build.Builder');
 goog.require('breel.build.ClosureDevelopmentPhase');
+goog.require('breel.build.CompassCompilerPhase');
 
 goog.provide('jomv3.DevelopmentBuilder');
 
@@ -22,6 +23,11 @@ jomv3.DevelopmentBuilder = function () {
 		require: 'jomv3.popupflash',
 		output: 'js/jomv3-popupflash-base.js'
 	}));
+
+  this.addPhase(new breel.build.CompassCompilerPhase({
+    input: ['scss/', 'public/assets/images/icon'],
+    config: 'scss/config.rb'
+   }));
 };
 
 goog.inherits(jomv3.DevelopmentBuilder, breel.build.Builder);

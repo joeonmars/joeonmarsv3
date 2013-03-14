@@ -19,7 +19,7 @@ jomv3.ReleaseBuilder = function () {
 		input: ['js/', '../utils/breel-commons', '../utils/closure-templates-for-js'],
 		require: 'jomv3.main',
 		output: 'public/assets/js/main.js',
-		externs: 'source/js/jomv3/externs.js',
+		externs: 'js/jomv3/externs.js',
 		compilationLevel: breel.build.ClosureCompilerPhase.CompilationLevel.ADVANCED_OPTIMIZATIONS
 	}));
 };
