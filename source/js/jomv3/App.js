@@ -9,10 +9,11 @@ goog.require('jomv3.controllers.NavigationController');
 goog.require('jomv3.views.elements.RoundThumb');
 goog.require('jomv3.views.elements.UISpinner');
 goog.require('jomv3.fx.FermatSpiral');
+goog.require('jomv3.fx.DummyScrollBar');
 
 
 jomv3.App = function () {
-
+/*
 	// app assets
 	jomv3.ExternalAssets = {};
 
@@ -94,6 +95,32 @@ jomv3.App = function () {
 	//
 	var draggableCursor = jomv3.utils.addDraggableCursor(document.body);
 	//draggableCursor.remove();
+*/
+	//
+	this.outerDom = goog.dom.createDom('div', 'outer');
+	goog.style.setStyle(this.outerDom, {'width': '100%', 'height': '100%'});
+
+	this.innerDom = goog.dom.createDom('div', 'inner');
+	var totalWidth = 200 * 50;
+	goog.style.setStyle(this.innerDom, {'width': totalWidth + 'px', 'height': '100%', 'background': 'orange', 'white-space': 'nowrap'});
+
+	for(var i = 0; i < 50; ++i) {
+		var div = goog.dom.createDom('div');
+		goog.style.setStyle(div, {'width': '200px', 'height': '100%', 'display': 'inline-block', 'background': jomv3.utils.getRandomCssColor()});
+
+		goog.dom.appendChild(this.innerDom, div);
+	}
+
+	goog.dom.appendChild(document.body, this.outerDom);
+	goog.dom.appendChild(this.outerDom, this.innerDom);
+
+	this.scrollBar = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, jomv3.fx.DummyScrollBar.Direction.HORIZONTAL, {
+		layout: 'right',
+		sliderWidth: 20,
+		sliderHeight: '100%'
+	});
+
+	goog.style.setStyle(this.scrollBar.domElement, 'position', 'fixed');
 };
 
 
