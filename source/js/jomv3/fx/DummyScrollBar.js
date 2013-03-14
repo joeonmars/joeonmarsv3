@@ -118,6 +118,8 @@ goog.inherits(jomv3.fx.DummyScrollBar, goog.events.EventTarget);
 
 jomv3.fx.DummyScrollBar.prototype.dispose = function() {
   goog.base(this, 'dispose');
+
+  this.dragger.dispose();
 };
 
 
@@ -134,7 +136,7 @@ jomv3.fx.DummyScrollBar.prototype.setDimensions = function(outerLength, innerLen
 };
 
 
-jomv3.fx.DummyScrollBar.prototype.onDrag = function(e) {//console.log(e.currentTarget.deltaX, this.dragger.startX)
+jomv3.fx.DummyScrollBar.prototype.onDrag = function(e) {
   var sliderSize = goog.style.getSize(this.slider);
   var handleSize = goog.style.getSize(this.handle);
   var innerContentSize = goog.style.getSize(this.innerContent);

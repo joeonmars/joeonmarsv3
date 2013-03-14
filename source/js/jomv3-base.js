@@ -2,7 +2,7 @@
 
 goog.addDependency("../jomv3/App.js", ["jomv3.App"], ["goog.events","goog.userAgent","goog.math","goog.window","jomv3.controllers.AssetsController","jomv3.controllers.NavigationController","jomv3.views.elements.RoundThumb","jomv3.views.elements.UISpinner","jomv3.fx.FermatSpiral","jomv3.fx.DummyScrollBar"]);
 goog.addDependency("../jomv3/build/DevelopmentBuilder.js", ["jomv3.DevelopmentBuilder"], ["breel.build.Builder","breel.build.ClosureDevelopmentPhase"]);
-goog.addDependency("../jomv3/build/ReleaseBuilder.js", ["jomv3.ReleaseBuilder"], ["breel.build.Builder"]);
+goog.addDependency("../jomv3/build/ReleaseBuilder.js", ["jomv3.ReleaseBuilder"], ["breel.build.Builder","breel.build.MirrorPhase","breel.build.ClosureCompilerPhase"]);
 goog.addDependency("../jomv3/controllers/AssetsController.js", ["jomv3.controllers.AssetsController"], ["goog.array","goog.dom","goog.events.EventTarget","goog.events","goog.History","goog.object"]);
 goog.addDependency("../jomv3/controllers/NavigationController.js", ["jomv3.controllers.NavigationController"], ["goog.array","goog.dom","goog.events.EventTarget","goog.events","goog.History","goog.object","goog.string"]);
 goog.addDependency("../jomv3/controllers/ResizeController.js", ["jomv3.controllers.ResizeController"], ["goog.dom","goog.dom.classes","goog.dom.ViewportSizeMonitor","goog.events.EventType","goog.events.EventTarget","goog.math.Size","goog.style","goog.userAgent"]);
@@ -17,6 +17,7 @@ goog.addDependency("../jomv3/fx/FermatSpiral.js", ["jomv3.fx.FermatSpiral"], [])
 goog.addDependency("../jomv3/fx/PageScroller.js", ["joeonmars.fx.PageScroller"], ["goog.dom","goog.dom.classes","goog.events.EventTarget","goog.math.Size","goog.object","goog.style","goog.Timer","joeonmars.events.ScrollEvent"]);
 goog.addDependency("../jomv3/main.js", ["jomv3.main"], ["goog.userAgent.product","jomv3.App","jomv3.Utils"]);
 goog.addDependency("../jomv3/popupflash.js", ["jomv3.popupflash"], ["goog.dom","goog.dom.ViewportSizeMonitor","goog.style","goog.ui.media.FlashObject"]);
+goog.addDependency("../jomv3/templates/simple.js", ["examples.simple"], ["soy","soydata"]);
 goog.addDependency("../jomv3/unsupported.js", ["jomv3.unsupported"], ["goog.userAgent"]);
 goog.addDependency("../jomv3/utils.js", ["jomv3.Utils"], ["goog.dom","goog.dom.classes","goog.fx.css3","goog.fx.Transition","goog.style","goog.style.cursor","goog.userAgent","goog.math"]);
 goog.addDependency("../jomv3/views/artworks/Artwork.js", ["joeonmars.views.artworks.Artwork"], ["goog.array","goog.dom","goog.dom.classes","goog.string","goog.style"]);
