@@ -4,7 +4,7 @@
 
 		<link rel="icon" type="image/x-icon" href="assets/images/favicon.ico"/>
 		<link rel="stylesheet" href="assets/css/main.css" media="screen"/>
-
+		
 		<script type="text/javascript" src="assets/js/thirdparty/consoleshim.min.js"></script>
 		<script type="text/javascript" src="assets/js/thirdparty/createjs/preloadjs-0.3.0.min.js"></script>
 		<script type="text/javascript" src="assets/js/thirdparty/fastclick.js"></script>
