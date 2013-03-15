@@ -97,30 +97,123 @@ jomv3.App = function () {
 	//draggableCursor.remove();
 */
 	//
-	this.outerDom = goog.dom.createDom('div', 'outer');
+	this.container = goog.dom.createDom('div', null, [
+			this.outerDom = goog.dom.createDom('div', 'outer', [
+				this.innerDom = goog.dom.createDom('div', 'inner')
+				])
+		]);
+	
+	goog.style.setStyle(this.container, {'width': '100%', 'height': '100%'});
 	goog.style.setStyle(this.outerDom, {'width': '100%', 'height': '100%'});
 
-	this.innerDom = goog.dom.createDom('div', 'inner');
-	var totalWidth = 200 * 50;
-	goog.style.setStyle(this.innerDom, {'width': totalWidth + 'px', 'height': '100%', 'background': 'orange', 'white-space': 'nowrap'});
+	var numInnerBoxes = 100;
+	var innerBoxWidth = 200;
+	var totalWidth = innerBoxWidth * numInnerBoxes;
+	goog.style.setStyle(this.innerDom, {'width': totalWidth + 'px', 'height': '200%', 'background': '#333'});
 
-	for(var i = 0; i < 50; ++i) {
+	for(var i = 0; i < numInnerBoxes; ++i) {
 		var div = goog.dom.createDom('div');
-		goog.style.setStyle(div, {'width': '200px', 'height': '100%', 'display': 'inline-block', 'background': jomv3.utils.getRandomCssColor()});
+		goog.style.setStyle(div, {'display': 'inline-block', 'vertical-align': 'top', 'width': innerBoxWidth + 'px', 'height': Math.round(Math.random()*100)+'%', 'background': jomv3.utils.getRandomCssColor()});
 
 		goog.dom.appendChild(this.innerDom, div);
 	}
 
-	goog.dom.appendChild(document.body, this.outerDom);
-	goog.dom.appendChild(this.outerDom, this.innerDom);
+	goog.dom.appendChild(document.body, this.container);
 
-	this.scrollBar = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, jomv3.fx.DummyScrollBar.Direction.HORIZONTAL, {
+	this.scrollBarV = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
 		layout: 'right',
-		sliderWidth: 20,
-		sliderHeight: '100%'
+		sliderWidth: 50,
+		sliderHeight: '100%',
+		easeWhenJump: true,
+		onDragCallback: goog.bind(onDummyDrag, this)
 	});
 
-	goog.style.setStyle(this.scrollBar.domElement, 'position', 'fixed');
+	goog.style.setStyle(this.scrollBarV.domElement, 'position', 'absolute');
+
+	this.scrollBarH = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.HORIZONTAL, {
+		layout: 'bottom',
+		sliderWidth: '50%',
+		sliderHeight: 50,
+		easeWhenJump: true,
+		onDragCallback: goog.bind(onDummyDrag, this)
+	});
+
+	goog.style.setStyle(this.scrollBarH.domElement, 'position', 'absolute');
+
+	//
+	this.nested = goog.dom.createDom('div', null, [
+		this.outerNestedDom = goog.dom.createDom('div', 'outer', [
+			this.innerNestedDom = goog.dom.createDom('div', 'inner')
+			])
+		]);
+	goog.style.setStyle(this.nested, {'position': 'absolute', 'left': '100px', 'top': '100px'});
+	goog.style.setStyle(this.outerNestedDom, {'width': '300px', 'height': '300px', 'outline': '2px solid black'});
+	goog.style.setStyle(this.innerNestedDom, {'width': '100%', 'height': '1000px', 'background': '-webkit-linear-gradient(green, blue)'});
+
+	goog.dom.appendChild(this.innerDom, this.nested);
+
+	this.nestedScrollBarV = new jomv3.fx.DummyScrollBar(this.outerNestedDom, this.innerNestedDom, this.nested, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
+		layout: 'right',
+		sliderWidth: 40,
+		ease: .2,
+		easeWhenMouseWheel: true,
+		easeWhenJump: true
+	});
+
+	goog.style.setStyle(this.nestedScrollBarV.domElement, 'position', 'absolute');
+
+  // create scroller
+  function onDummyDrag() {
+  	this.zyngaScroller.scrollTo(this.outerDom.scrollLeft, this.outerDom.scrollTop);
+  }
+
+  function onDown(e) {
+	  var ev = e.getBrowserEvent();
+	  var touches = goog.userAgent.MOBILE ? ev.touches : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
+
+	  this.zyngaScroller.doTouchStart(touches, ev.timeStamp);
+
+	  goog.events.listen(document, ['touchmove', 'mousemove'], onMove, false, this);
+	  goog.events.listen(document, ['touchend', 'mouseup'], onUp, false, this);
+
+	  this.scrollBarH.stopAnimating();
+	  this.scrollBarV.stopAnimating();
+  };
+
+  function onMove(e) {
+	  var ev = e.getBrowserEvent();
+	  var touches = goog.userAgent.MOBILE ? ev.touches : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
+
+	  this.zyngaScroller.doTouchMove(touches, ev.timeStamp);
+  };
+
+  function onUp(e) {
+	  var ev = e.getBrowserEvent();
+	  this.zyngaScroller.doTouchEnd(ev.timeStamp);
+
+	  goog.events.unlisten(document, ['touchmove', 'mousemove'], onMove, false, this);
+	  goog.events.unlisten(document, ['touchend', 'mouseup'], onUp, false, this);
+  };
+
+  var zyngaScrollerOptions = {
+  	locking: false
+  };
+
+  this.zyngaScroller = new Scroller(goog.bind(function(left, top) {
+  	this.outerDom.scrollLeft = left;
+  	this.outerDom.scrollTop = top;
+  }, this), zyngaScrollerOptions);
+ 
+  goog.events.listen(this.outerDom, ['touchstart', 'mousedown'], onDown, false, this);
+
+  var windowSize = goog.dom.getViewportSize();
+  var innerDomSize = goog.style.getSize(this.innerDom);
+  this.zyngaScroller.setDimensions(windowSize.width, windowSize.height, innerDomSize.width, innerDomSize.height);
+
+	//
+	document.addEventListener('touchstart', function(e) {
+		e.preventDefault();
+	});
 };
 
 
