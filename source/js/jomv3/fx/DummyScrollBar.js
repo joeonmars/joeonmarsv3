@@ -20,16 +20,21 @@ goog.require('goog.style');
       outerLength: number,
       innerLength: number,
       layout: string,
+      useDefaultSkin: boolean,
       ease: number,
       easeWhenMouseWheel: boolean,
       easeWhenJump: boolean,
+      onScrollCallback: function,
+      onDragStartCallback: function,
       onDragCallback: function
+      onDragEndCallback: function
     }
  */
 jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direction, options) {
   goog.base(this);
 
   var options = options || {};
+  options.useDefaultSkin = (options.useDefaultSkin !== false);
 
   this.outerContent = outerContent;
   this.innerContent = innerContent;
@@ -45,7 +50,10 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
 
   this._isAnimating = false;
 
+  this._onScrollCallback = options.onScrollCallback;
+  this._onDragStartCallback = options.onDragStartCallback;
   this._onDragCallback = options.onDragCallback;
+  this._onDragEndCallback = options.onDragEndCallback;
 
   // set layout position, and optionally fallback
   // to default layout position:
@@ -94,8 +102,7 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
     'left': cssLeft,
     'top': cssTop,
     'bottom': cssBottom,
-    'right': cssRight,
-    'outline': '1px solid lightgray'
+    'right': cssRight
   });
 
   goog.style.setStyle(this.slider, {
@@ -107,9 +114,13 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
   goog.style.setStyle(this.handle, {
     'position': 'absolute',
     'width': handleW,
-    'height': handleH,
-    'outline': '1px solid red'
+    'height': handleH
   });
+
+  if(options.useDefaultSkin === true) {
+    goog.style.setStyle(this.domElement, {'outline': '1px solid lightgray', 'background': 'rgba(255, 255, 255, .3)'});
+    goog.style.setStyle(this.handle, {'outline': '1px solid red', 'background': 'rgba(255, 0, 0, .3)'});
+  }
 
   // prevent the position:abolute contents in innerContent from staying fixed in
   // as the innerContent scrolls
@@ -163,7 +174,7 @@ jomv3.fx.DummyScrollBar.prototype.dispose = function() {
 
 
 jomv3.fx.DummyScrollBar.prototype.isAnimating = function() {
-  return _isAnimating;
+  return this._isAnimating;
 };
 
 
@@ -254,11 +265,19 @@ jomv3.fx.DummyScrollBar.prototype.scrollBy = function(delta, animate) {
 
 jomv3.fx.DummyScrollBar.prototype.onDragStart = function(e) {
   goog.dom.classes.add(this.handle, 'down');
+
+  if(this._onDragStartCallback) {
+    this._onDragStartCallback.call();
+  }
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.onDragEnd = function(e) {
   goog.dom.classes.remove(this.handle, 'down');
+
+  if(this._onDragEndCallback) {
+    this._onDragEndCallback.call();
+  }
 };
 
 
@@ -283,7 +302,7 @@ jomv3.fx.DummyScrollBar.prototype.onDrag = function(e) {
     this.outerContent.scrollTop = scrollPosition;
   }
 
-  // external callback
+  // external drag callback
   if(this._onDragCallback) {
     this._onDragCallback.call();
   }
@@ -328,7 +347,13 @@ jomv3.fx.DummyScrollBar.prototype.onDownSlider = function(e) {
 
 
 jomv3.fx.DummyScrollBar.prototype.onScroll = function(e) {
-  if(this.dragger.isDragging()) return;
+  if(this.dragger.isDragging()) {
+    // dispatch external callback if it's a dummy scroll(dragging)
+    if(this._onScrollCallback) {
+      this._onScrollCallback.call();
+    }
+    return;
+  }
 
   var innerContentLength;
   if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
@@ -353,10 +378,18 @@ jomv3.fx.DummyScrollBar.prototype.onScroll = function(e) {
     handlePosition = this._sliderSize.height * (scrollPosition / innerContentLength);
     goog.style.setPosition(this.handle, 0, handlePosition);
   }
+
+  // dispatch external callback if it's a dummy scroll(animating)
+  // mousewheeling is dispatched in mousewheel event handler
+  if(this._onScrollCallback && this.isAnimating()) {
+    this._onScrollCallback.call();
+  }
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.onMouseWheel = function(e) {
+  this.stopAnimating();
+
   var ev = e.getBrowserEvent();
   var delta = 0;
 
@@ -372,6 +405,14 @@ jomv3.fx.DummyScrollBar.prototype.onMouseWheel = function(e) {
   }
 
   this.scrollBy(-delta * steps, this._easeWhenMouseWheel);
+
+  // external callback
+  // normally all dummy scroll callbacks should be dispatched by onScroll, 
+  // however, it is hard to detect mousewheel scroll outside of this function.
+  // so the callback is dispatched just from inside the mousewheel handler
+  if(this._onScrollCallback) {
+    this._onScrollCallback.call();
+  }
 };
 
 
@@ -386,11 +427,6 @@ jomv3.fx.DummyScrollBar.prototype.onAnimationFrame = function(now) {
   }
 
   this._animProps.last = scrollPosition;
-
-  // external callback
-  if(this._onDragCallback) {
-    this._onDragCallback.call();
-  }
 };
 
 

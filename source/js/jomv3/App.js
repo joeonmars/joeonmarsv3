@@ -125,17 +125,19 @@ jomv3.App = function () {
 		sliderWidth: 50,
 		sliderHeight: '100%',
 		easeWhenJump: true,
-		onDragCallback: goog.bind(onDummyDrag, this)
+		useDefaultSkin: true,
+		onScrollCallback: goog.bind(onDummyScroll, this)
 	});
 
 	goog.style.setStyle(this.scrollBarV.domElement, 'position', 'absolute');
 
 	this.scrollBarH = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.HORIZONTAL, {
 		layout: 'bottom',
-		sliderWidth: '50%',
+		sliderWidth: '100%',
 		sliderHeight: 50,
 		easeWhenJump: true,
-		onDragCallback: goog.bind(onDummyDrag, this)
+		useDefaultSkin: true,
+		onScrollCallback: goog.bind(onDummyScroll, this)
 	});
 
 	goog.style.setStyle(this.scrollBarH.domElement, 'position', 'absolute');
@@ -154,16 +156,17 @@ jomv3.App = function () {
 
 	this.nestedScrollBarV = new jomv3.fx.DummyScrollBar(this.outerNestedDom, this.innerNestedDom, this.nested, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
 		layout: 'right',
-		sliderWidth: 40,
+		sliderWidth: 20,
 		ease: .2,
 		easeWhenMouseWheel: true,
-		easeWhenJump: true
+		easeWhenJump: true,
+		useDefaultSkin: true
 	});
 
 	goog.style.setStyle(this.nestedScrollBarV.domElement, 'position', 'absolute');
 
   // create scroller
-  function onDummyDrag() {
+  function onDummyScroll() {
   	this.zyngaScroller.scrollTo(this.outerDom.scrollLeft, this.outerDom.scrollTop);
   }
 
