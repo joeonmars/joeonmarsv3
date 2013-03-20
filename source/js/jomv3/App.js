@@ -125,17 +125,19 @@ jomv3.App = function () {
 		sliderWidth: 50,
 		sliderHeight: '100%',
 		easeWhenJump: true,
-		onDragCallback: goog.bind(onDummyDrag, this)
+		onDragCallback: goog.bind(onDummyDrag, this),
+		onMouseWheelCallback: goog.bind(onDummyDrag, this)
 	});
 
 	goog.style.setStyle(this.scrollBarV.domElement, 'position', 'absolute');
 
 	this.scrollBarH = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.HORIZONTAL, {
 		layout: 'bottom',
-		sliderWidth: '50%',
+		sliderWidth: '100%',
 		sliderHeight: 50,
 		easeWhenJump: true,
-		onDragCallback: goog.bind(onDummyDrag, this)
+		onDragCallback: goog.bind(onDummyDrag, this),
+		onMouseWheelCallback: goog.bind(onDummyDrag, this)
 	});
 
 	goog.style.setStyle(this.scrollBarH.domElement, 'position', 'absolute');
@@ -162,12 +164,13 @@ jomv3.App = function () {
 
 	goog.style.setStyle(this.nestedScrollBarV.domElement, 'position', 'absolute');
 
-  // create scroller
   function onDummyDrag() {
   	this.zyngaScroller.scrollTo(this.outerDom.scrollLeft, this.outerDom.scrollTop);
   }
 
   function onDown(e) {
+  	if(jomv3.fx.DummyScrollBar.Manager.isScrolling()) return false;
+
 	  var ev = e.getBrowserEvent();
 	  var touches = goog.userAgent.MOBILE ? ev.touches : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
 
@@ -196,7 +199,7 @@ jomv3.App = function () {
   };
 
   var zyngaScrollerOptions = {
-  	locking: false
+  	locking: true
   };
 
   this.zyngaScroller = new Scroller(goog.bind(function(left, top) {
