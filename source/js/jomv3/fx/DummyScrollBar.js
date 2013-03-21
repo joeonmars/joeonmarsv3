@@ -10,6 +10,7 @@ goog.require('goog.array');
 goog.require('goog.events.EventType');
 goog.require('goog.events.MouseWheelHandler');
 goog.require('goog.dom');
+goog.require('goog.dom.ViewportSizeMonitor');
 goog.require('goog.userAgent');
 
 /**
@@ -24,6 +25,9 @@ jomv3.fx.DummyScrollBarManager = function() {
     this._mouseWheelHandler = new goog.events.MouseWheelHandler(document);
     goog.events.listen(this._mouseWheelHandler, goog.events.MouseWheelHandler.EventType.MOUSEWHEEL, this.onMouseWheel, false, this);
   }
+
+  this._viewportSizeMonitor = new goog.dom.ViewportSizeMonitor();
+  goog.events.listen(this._viewportSizeMonitor, goog.events.EventType.RESIZE, this.onResize, false, this);
 };
 goog.addSingletonGetter(jomv3.fx.DummyScrollBarManager);
 
@@ -68,38 +72,6 @@ jomv3.fx.DummyScrollBarManager.prototype.isAnimating = function(dummyScrollBar) 
 };
 
 
-jomv3.fx.DummyScrollBarManager.prototype.onMouseWheel = function(e) {
-  goog.array.find(this._scrollBars, function(scrollBar) {
-    if(goog.dom.contains(scrollBar.outerContent, e.target)) {
-      // skip and keep bubbling if cannot scroll further
-      if(!scrollBar.canScrollFurther(-e.detail)) {
-        return false;
-      }
-      // if mousewheel on the content, scroll all scrollbars associated with this content
-      goog.array.forEach(this._scrollBars, function(bar) {
-        if(bar.outerContent === scrollBar.outerContent) {
-          bar.onMouseWheel(e);
-        }
-      });
-      e.stopPropagation();
-      return true;
-    }else if(goog.dom.contains(scrollBar.domElement, e.target)) {
-      // skip and keep bubbling if cannot scroll further
-      if(!scrollBar.canScrollFurther(-e.detail)) {
-        return false;
-      }
-      // if mousewheel on the scroll bar, only scroll the scroll bar
-      scrollBar.onMouseWheel(e);
-      e.stopPropagation();
-      return true;
-    }else {
-      // continue to find next target
-      return false;
-    }
-  }, this);
-};
-
-
 /**
  * Return a Boolean of whether the specified scrollbar is dragging,
  * or any scrollbar is dragging if no argument was passed
@@ -134,6 +106,47 @@ jomv3.fx.DummyScrollBarManager.prototype.isScrolling = function(dummyScrollBar) 
 };
 
 
+jomv3.fx.DummyScrollBarManager.prototype.onMouseWheel = function(e) {
+  goog.array.find(this._scrollBars, function(scrollBar) {
+    if(goog.dom.contains(scrollBar.outerContent, e.target)) {
+      // skip and keep bubbling if cannot scroll further
+      if(!scrollBar.canScrollFurther(-e.detail)) {
+        return false;
+      }
+      // if mousewheel on the content, scroll all scrollbars associated with this content
+      goog.array.forEach(this._scrollBars, function(bar) {
+        if(bar.outerContent === scrollBar.outerContent) {
+          bar.onMouseWheel(e);
+        }
+      });
+      e.stopPropagation();
+      return true;
+    }else if(goog.dom.contains(scrollBar.domElement, e.target)) {
+      // skip and keep bubbling if cannot scroll further
+      if(!scrollBar.canScrollFurther(-e.detail)) {
+        return false;
+      }
+      // if mousewheel on the scroll bar, only scroll the scroll bar
+      scrollBar.onMouseWheel(e);
+      e.stopPropagation();
+      return true;
+    }else {
+      // continue to find next target
+      return false;
+    }
+  }, this);
+};
+
+
+jomv3.fx.DummyScrollBarManager.prototype.onResize = function(e) {
+  goog.array.find(this._scrollBars, function(scrollBar) {
+    scrollBar.onResize(e);
+  });
+};
+
+
+
+
 /**
  * @fileoverview A dummy scrollbar hooked up with the default scrollbar.
  * Always change the scrollLeft property of a dom element in favor of higher performance than css positions/transforms
@@ -143,9 +156,7 @@ goog.provide('jomv3.fx.DummyScrollBar');
 
 goog.require('goog.dom');
 goog.require('goog.dom.classes');
-goog.require('goog.dom.ViewportSizeMonitor');
 goog.require('goog.events.EventTarget');
-goog.require('goog.events.EventType');
 goog.require('goog.events.MouseWheelHandler');
 goog.require('goog.fx.anim');
 goog.require('goog.fx.Dragger');
@@ -294,9 +305,6 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
   goog.events.listen(this.dragger, goog.fx.Dragger.EventType.END, this.onDragEnd, false, this);
   goog.events.listen(this.slider, ['mousedown', 'touchstart'], this.onDownSlider, false, this);
 
-  this._viewportSizeMonitor = new goog.dom.ViewportSizeMonitor();
-  goog.events.listen(this._viewportSizeMonitor, goog.events.EventType.RESIZE, this.onResize, false, this);
-
   // register the scrollbar to manager
   jomv3.fx.DummyScrollBar.Manager.add(this);
 };
@@ -433,7 +441,7 @@ jomv3.fx.DummyScrollBar.prototype.scrollBy = function(delta, animate) {
   }else {
 
     if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-      this.outerContent.scrollLeft += delta;
+      this.outerContent.scrollLeft += delta;console.log(this.outerContent.scrollLeft,this.outerContent.scrollWidth-goog.dom.getViewportSize().width)
       return this.outerContent.scrollLeft;
     }else {
       this.outerContent.scrollTop += delta;

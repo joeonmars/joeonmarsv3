@@ -7,7 +7,7 @@ goog.addDependency("../jomv3/main.js", ["jomv3.main"], ["goog.userAgent.product"
     goog.addDependency("../jomv3/views/elements/RoundThumb.js", ["jomv3.views.elements.RoundThumb"], ["goog.dom","goog.events.EventTarget","goog.fx","goog.style"]);
     goog.addDependency("../jomv3/views/elements/UISpinner.js", ["jomv3.views.elements.UISpinner"], ["goog.dom","goog.events.EventTarget","goog.style"]);
     goog.addDependency("../jomv3/fx/FermatSpiral.js", ["jomv3.fx.FermatSpiral"], []);
-    goog.addDependency("../jomv3/fx/DummyScrollBar.js", ["jomv3.fx.DummyScrollBarManager","jomv3.fx.DummyScrollBar"], ["goog.array","goog.events.EventType","goog.events.MouseWheelHandler","goog.dom","goog.userAgent","goog.dom","goog.dom.classes","goog.dom.ViewportSizeMonitor","goog.events.EventTarget","goog.events.EventType","goog.events.MouseWheelHandler","goog.fx.anim","goog.fx.Dragger","goog.math.Size","goog.math.Rect","goog.style"]);
+    goog.addDependency("../jomv3/fx/DummyScrollBar.js", ["jomv3.fx.DummyScrollBarManager","jomv3.fx.DummyScrollBar"], ["goog.array","goog.events.EventType","goog.events.MouseWheelHandler","goog.dom","goog.dom.ViewportSizeMonitor","goog.userAgent","goog.dom","goog.dom.classes","goog.events.EventTarget","goog.events.MouseWheelHandler","goog.fx.anim","goog.fx.Dragger","goog.math.Size","goog.math.Rect","goog.style"]);
   goog.addDependency("../jomv3/utils.js", ["jomv3.Utils"], ["goog.dom","goog.dom.classes","goog.fx.css3","goog.fx.Transition","goog.style","goog.style.cursor","goog.userAgent","goog.math"]);
 
 goog.require('jomv3.main');
