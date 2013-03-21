@@ -164,14 +164,19 @@ goog.require('goog.style');
       ease: number,
       easeWhenMouseWheel: boolean,
       easeWhenJump: boolean,
+      useDefaultSkin: boolean,
+      onDragStartCallback: function,
       onDragCallback: function,
-      onMouseWheelCallback: function
+      onDragEndCallback: function,
+      onMouseWheelCallback: function,
+      onActiveScrollCallback: function,
     }
  */
 jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direction, options) {
   goog.base(this);
 
   var options = options || {};
+  options.useDefaultSkin = (options.useDefaultSkin !== false);
 
   this.outerContent = outerContent;
   this.innerContent = innerContent;
@@ -187,8 +192,11 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
 
   this._isAnimating = false;
 
-  this._onDragCallback = options.onDragCallback;
   this._onMouseWheelCallback = options.onMouseWheelCallback;
+  this._onDragStartCallback = options.onDragStartCallback;
+  this._onDragCallback = options.onDragCallback;
+  this._onDragEndCallback = options.onDragEndCallback;
+  this._onActiveScrollCallback = options.onActiveScrollCallback;
 
   // set layout position, and optionally fallback
   // to default layout position:
@@ -237,8 +245,7 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
     'left': cssLeft,
     'top': cssTop,
     'bottom': cssBottom,
-    'right': cssRight,
-    'outline': '1px solid lightgray'
+    'right': cssRight
   });
 
   goog.style.setStyle(this.slider, {
@@ -250,9 +257,13 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
   goog.style.setStyle(this.handle, {
     'position': 'absolute',
     'width': handleW,
-    'height': handleH,
-    'outline': '1px solid red'
+    'height': handleH
   });
+
+  if(options.useDefaultSkin === true) {
+    goog.style.setStyle(this.domElement, {'outline': '1px solid green', 'background': 'rgba(0, 255, 0, .3)'});
+    goog.style.setStyle(this.handle, {'background': 'rgba(255, 0, 0, .5)'});
+  }
 
   // prevent the position:abolute contents in innerContent from staying fixed in
   // as the innerContent scrolls
@@ -435,11 +446,23 @@ jomv3.fx.DummyScrollBar.prototype.scrollBy = function(delta, animate) {
 
 jomv3.fx.DummyScrollBar.prototype.onDragStart = function(e) {
   goog.dom.classes.add(this.handle, 'down');
+
+  if(this._onDragStartCallback) {
+    this._onDragStartCallback.call();
+  }
+
+  if(this._onActiveScrollCallback) {
+    this._onActiveScrollCallback.call();
+  }
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.onDragEnd = function(e) {
   goog.dom.classes.remove(this.handle, 'down');
+
+  if(this._onDragEndCallback) {
+    this._onDragEndCallback.call();
+  }
 };
 
 
@@ -467,6 +490,10 @@ jomv3.fx.DummyScrollBar.prototype.onDrag = function(e) {
   // external callback
   if(this._onDragCallback) {
     this._onDragCallback.call();
+  }
+
+  if(this._onActiveScrollCallback) {
+    this._onActiveScrollCallback.call();
   }
 };
 
@@ -505,6 +532,11 @@ jomv3.fx.DummyScrollBar.prototype.onDownSlider = function(e) {
   }
 
   this.scrollTo(scrollPosition, this._easeWhenJump);
+
+  // external callback
+  if(this._onActiveScrollCallback) {
+    this._onActiveScrollCallback.call();
+  }
 };
 
 
@@ -538,6 +570,8 @@ jomv3.fx.DummyScrollBar.prototype.onScroll = function(e) {
 
 
 jomv3.fx.DummyScrollBar.prototype.onMouseWheel = function(e) {
+  this.stopAnimating();
+
   var ev = e.getBrowserEvent();
   var delta = 0;
 
@@ -558,6 +592,10 @@ jomv3.fx.DummyScrollBar.prototype.onMouseWheel = function(e) {
   if(this._onMouseWheelCallback) {
     this._onMouseWheelCallback.call();
   }
+
+  if(this._onActiveScrollCallback) {
+    this._onActiveScrollCallback.call();
+  }
 };
 
 
@@ -574,8 +612,8 @@ jomv3.fx.DummyScrollBar.prototype.onAnimationFrame = function(now) {
   this._animProps.last = scrollPosition;
 
   // external callback
-  if(this._onDragCallback) {
-    this._onDragCallback.call();
+  if(this._onActiveScrollCallback) {
+    this._onActiveScrollCallback.call();
   }
 };
 
