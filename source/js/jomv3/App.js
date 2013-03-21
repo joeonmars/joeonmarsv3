@@ -207,13 +207,21 @@ jomv3.App = function () {
  
   goog.events.listen(this.outerDom, ['touchstart', 'mousedown'], onDown, false, this);
 
-  var windowSize = goog.dom.getViewportSize();
-  var innerDomSize = goog.style.getSize(this.innerDom);
-  this.zyngaScroller.setDimensions(windowSize.width, windowSize.height, innerDomSize.width, innerDomSize.height);
+  var self = this;
+
+	var outerDomSize = goog.style.getSize(self.outerDom);
+	var innerDomSize = goog.style.getSize(self.innerDom);
+	self.zyngaScroller.setDimensions(outerDomSize.width, outerDomSize.height, innerDomSize.width, innerDomSize.height);
 
 	//
 	document.addEventListener('touchstart', function(e) {
 		e.preventDefault();
+	});
+
+	window.addEventListener('resize', function(e) {
+		var outerDomSize = goog.style.getSize(self.outerDom);
+		var innerDomSize = goog.style.getSize(self.innerDom);
+		self.zyngaScroller.setDimensions(outerDomSize.width, outerDomSize.height, innerDomSize.width, innerDomSize.height);
 	});
 };
 
