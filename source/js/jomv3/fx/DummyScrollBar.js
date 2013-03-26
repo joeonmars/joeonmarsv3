@@ -38,9 +38,10 @@ jomv3.fx.DummyScrollBarManager.prototype.add = function(dummyScrollBar) {
   // sort the scrollbars from innermost to outermost
   // this allows mousewheel handler to begin checking from the innermost element
   // in accordance to the order of event bubbling
-  goog.array.sort(this._scrollBars, function(a, b) {
-    if(goog.dom.contains(a.outerContent, b.outerContent)) return 1;
-    else return -1;
+  this._scrollBars.sort(function (a, b) {
+  return goog.dom.contains(a.outerContent, b.outerContent) ? 1 :
+         goog.dom.contains(b.outerContent, a.outerContent) ? -1 :
+         0;
   });
 };
 
