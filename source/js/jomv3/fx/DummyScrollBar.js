@@ -39,8 +39,8 @@ jomv3.fx.DummyScrollBarManager.prototype.add = function(dummyScrollBar) {
   // this allows mousewheel handler to begin checking from the innermost element
   // in accordance to the order of event bubbling
   this._scrollBars.sort(function (a, b) {
-  return goog.dom.contains(a.outerContent, b.outerContent) ? 1 :
-         goog.dom.contains(b.outerContent, a.outerContent) ? -1 :
+  return goog.dom.contains(a.outerElement, b.outerElement) ? 1 :
+         goog.dom.contains(b.outerElement, a.outerElement) ? -1 :
          0;
   });
 };
@@ -109,14 +109,14 @@ jomv3.fx.DummyScrollBarManager.prototype.isScrolling = function(dummyScrollBar) 
 
 jomv3.fx.DummyScrollBarManager.prototype.onMouseWheel = function(e) {
   goog.array.find(this._scrollBars, function(scrollBar) {
-    if(goog.dom.contains(scrollBar.outerContent, e.target)) {
+    if(goog.dom.contains(scrollBar.outerElement, e.target)) {
       // skip and keep bubbling if cannot scroll further
       if(!scrollBar.canScrollFurther(-e.detail)) {
         return false;
       }
       // if mousewheel on the content, scroll all scrollbars associated with this content
       goog.array.forEach(this._scrollBars, function(bar) {
-        if(bar.outerContent === scrollBar.outerContent) {
+        if(bar.outerElement === scrollBar.outerElement) {
           bar.onMouseWheel(e);
         }
       });
@@ -184,14 +184,14 @@ goog.require('goog.style');
       onActiveScrollCallback: function,
     }
  */
-jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direction, options) {
+jomv3.fx.DummyScrollBar = function(outerElement, innerElement, container, direction, options) {
   goog.base(this);
 
   var options = options || {};
   options.useDefaultSkin = (options.useDefaultSkin !== false);
 
-  this.outerContent = outerContent;
-  this.innerContent = innerContent;
+  this.outerElement = outerElement;
+  this.innerElement = innerElement;
 
   this._userOuterLength = options.outerLength;
   this._userInnerLength = options.innerLength;
@@ -277,11 +277,11 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
     goog.style.setStyle(this.handle, {'background': 'rgba(255, 0, 0, .5)'});
   }
 
-  // prevent the position:abolute contents in innerContent from staying fixed in
-  // as the innerContent scrolls
-  goog.style.setStyle(this.innerContent, 'position', 'relative');
-  // hide the native scroll bar for outerContent
-  goog.style.setStyle(this.outerContent, 'overflow', 'hidden');
+  // prevent the position:abolute contents in innerElement from staying fixed in
+  // as the innerElement scrolls
+  goog.style.setStyle(this.innerElement, 'position', 'relative');
+  // hide the native scroll bar for outerElement
+  goog.style.setStyle(this.outerElement, 'overflow', 'hidden');
 
   // attach dom
   goog.dom.appendChild(container, this.domElement);
@@ -300,7 +300,7 @@ jomv3.fx.DummyScrollBar = function(outerContent, innerContent, container, direct
   this.onResize();
 
   // add event listener
-  goog.events.listen(this.outerContent, goog.events.EventType.SCROLL, this.onScroll, false, this);
+  goog.events.listen(this.outerElement, goog.events.EventType.SCROLL, this.onScroll, false, this);
   goog.events.listen(this.dragger, goog.fx.Dragger.EventType.START, this.onDragStart, false, this);
   goog.events.listen(this.dragger, goog.fx.Dragger.EventType.DRAG, this.onDrag, false, this);
   goog.events.listen(this.dragger, goog.fx.Dragger.EventType.END, this.onDragEnd, false, this);
@@ -349,18 +349,18 @@ jomv3.fx.DummyScrollBar.prototype.canScrollFurther = function(delta) {
   if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
     if(dir === -1) {
       // scroll right
-      return (this.outerContent.scrollLeft < this.outerContent.scrollWidth - this.outerContent.offsetWidth);
+      return (this.outerElement.scrollLeft < this.outerElement.scrollWidth - this.outerElement.offsetWidth);
     }else {
       // scroll left
-      return (this.outerContent.scrollLeft > 0);
+      return (this.outerElement.scrollLeft > 0);
     }
   }else {
     if(dir === -1) {
       // scroll down
-      return (this.outerContent.scrollTop < this.outerContent.scrollHeight - this.outerContent.offsetHeight);
+      return (this.outerElement.scrollTop < this.outerElement.scrollHeight - this.outerElement.offsetHeight);
     }else {
       // scroll up
-      return (this.outerContent.scrollTop > 0);
+      return (this.outerElement.scrollTop > 0);
     }
   }
 };
@@ -398,11 +398,11 @@ jomv3.fx.DummyScrollBar.prototype.scrollTo = function(scrollPosition, animate) {
 
     if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
       this._animProps.scrollProp = 'scrollLeft';
-      this._animProps.last = this.outerContent.scrollLeft;
+      this._animProps.last = this.outerElement.scrollLeft;
       this._animProps.current = this._animProps.last;
     }else {
       this._animProps.scrollProp = 'scrollTop';
-      this._animProps.last = this.outerContent.scrollTop;
+      this._animProps.last = this.outerElement.scrollTop;
       this._animProps.current = this._animProps.last;
     }
 
@@ -412,9 +412,9 @@ jomv3.fx.DummyScrollBar.prototype.scrollTo = function(scrollPosition, animate) {
   }else {
 
     if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-      this.outerContent.scrollLeft = scrollPosition;
+      this.outerElement.scrollLeft = scrollPosition;
     }else {
-      this.outerContent.scrollTop = scrollPosition;
+      this.outerElement.scrollTop = scrollPosition;
     }
 
   }
@@ -426,13 +426,13 @@ jomv3.fx.DummyScrollBar.prototype.scrollBy = function(delta, animate) {
 
     if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
       this._animProps.scrollProp = 'scrollLeft';
-      this._animProps.end = this.outerContent.scrollLeft + delta;
-      this._animProps.last = this.outerContent.scrollLeft;
+      this._animProps.end = this.outerElement.scrollLeft + delta;
+      this._animProps.last = this.outerElement.scrollLeft;
       this._animProps.current = this._animProps.last;
     }else {
       this._animProps.scrollProp = 'scrollTop';
-      this._animProps.end = this.outerContent.scrollTop + delta;
-      this._animProps.last = this.outerContent.scrollTop;
+      this._animProps.end = this.outerElement.scrollTop + delta;
+      this._animProps.last = this.outerElement.scrollTop;
       this._animProps.current = this._animProps.last;
     }
 
@@ -442,11 +442,11 @@ jomv3.fx.DummyScrollBar.prototype.scrollBy = function(delta, animate) {
   }else {
 
     if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-      this.outerContent.scrollLeft += delta;console.log(this.outerContent.scrollLeft,this.outerContent.scrollWidth-goog.dom.getViewportSize().width)
-      return this.outerContent.scrollLeft;
+      this.outerElement.scrollLeft += delta;
+      return this.outerElement.scrollLeft;
     }else {
-      this.outerContent.scrollTop += delta;
-      return this.outerContent.scrollTop;
+      this.outerElement.scrollTop += delta;
+      return this.outerElement.scrollTop;
     }
 
   }
@@ -476,24 +476,24 @@ jomv3.fx.DummyScrollBar.prototype.onDragEnd = function(e) {
 
 
 jomv3.fx.DummyScrollBar.prototype.onDrag = function(e) {
-  var innerContentLength;
+  var innerElementLength;
   if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    innerContentLength = this._innerSize.width;
+    innerElementLength = this._innerSize.width;
   }else {
-    innerContentLength = this._innerSize.height;
+    innerElementLength = this._innerSize.height;
   }
 
   var scrollPosition;
   if(this.isHorizontalLayout) {
-    scrollPosition = innerContentLength * (e.left / this._sliderSize.width);
+    scrollPosition = innerElementLength * (e.left / this._sliderSize.width);
   }else {
-    scrollPosition = innerContentLength * (e.top / this._sliderSize.height);
+    scrollPosition = innerElementLength * (e.top / this._sliderSize.height);
   }
 
   if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    this.outerContent.scrollLeft = scrollPosition;
+    this.outerElement.scrollLeft = scrollPosition;
   }else {
-    this.outerContent.scrollTop = scrollPosition;
+    this.outerElement.scrollTop = scrollPosition;
   }
 
   // external callback
@@ -526,18 +526,18 @@ jomv3.fx.DummyScrollBar.prototype.onDownSlider = function(e) {
   }
 
   var scrollPosition;
-  var innerContentLength;
+  var innerElementLength;
 
   if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    innerContentLength = this._innerSize.width;
+    innerElementLength = this._innerSize.width;
   }else {
-    innerContentLength = this._innerSize.height;
+    innerElementLength = this._innerSize.height;
   }
 
   if(this.isHorizontalLayout) {
-    scrollPosition = offset / this._sliderSize.width * innerContentLength;
+    scrollPosition = offset / this._sliderSize.width * innerElementLength;
   }else {
-    scrollPosition = offset / this._sliderSize.height * innerContentLength;
+    scrollPosition = offset / this._sliderSize.height * innerElementLength;
   }
 
   this.scrollTo(scrollPosition, this._easeWhenJump);
@@ -552,27 +552,27 @@ jomv3.fx.DummyScrollBar.prototype.onDownSlider = function(e) {
 jomv3.fx.DummyScrollBar.prototype.onScroll = function(e) {
   if(this.isDragging()) return;
 
-  var innerContentLength;
+  var innerElementLength;
   if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    innerContentLength = this._innerSize.width;
+    innerElementLength = this._innerSize.width;
   }else {
-    innerContentLength = this._innerSize.height;
+    innerElementLength = this._innerSize.height;
   }
 
   var scrollPosition;
   var handlePosition;
 
   if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    scrollPosition = this.outerContent.scrollLeft;
+    scrollPosition = this.outerElement.scrollLeft;
   }else {
-    scrollPosition = this.outerContent.scrollTop;
+    scrollPosition = this.outerElement.scrollTop;
   }
 
   if(this.isHorizontalLayout) {
-    handlePosition = this._sliderSize.width * (scrollPosition / innerContentLength);
+    handlePosition = this._sliderSize.width * (scrollPosition / innerElementLength);
     goog.style.setPosition(this.handle, handlePosition, 0);
   }else {
-    handlePosition = this._sliderSize.height * (scrollPosition / innerContentLength);
+    handlePosition = this._sliderSize.height * (scrollPosition / innerElementLength);
     goog.style.setPosition(this.handle, 0, handlePosition);
   }
 };
@@ -611,7 +611,7 @@ jomv3.fx.DummyScrollBar.prototype.onMouseWheel = function(e) {
 jomv3.fx.DummyScrollBar.prototype.onAnimationFrame = function(now) {
   this._isAnimating = true;
 
-  var delta = (this._animProps.end - this.outerContent[this._animProps.scrollProp]) * this._animProps.ease;
+  var delta = (this._animProps.end - this.outerElement[this._animProps.scrollProp]) * this._animProps.ease;
   var scrollPosition = this.scrollBy(delta);
 
   if(Math.abs(scrollPosition - this._animProps.last) < 1) {
@@ -628,8 +628,8 @@ jomv3.fx.DummyScrollBar.prototype.onAnimationFrame = function(now) {
 
 
 jomv3.fx.DummyScrollBar.prototype.onResize = function(e) {
-  this._outerSize = goog.style.getSize(this.outerContent);
-  this._innerSize = goog.style.getSize(this.innerContent);
+  this._outerSize = goog.style.getSize(this.outerElement);
+  this._innerSize = goog.style.getSize(this.innerElement);
 
   this.setDimensions();
 
