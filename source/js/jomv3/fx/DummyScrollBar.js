@@ -176,12 +176,9 @@ goog.require('goog.style');
       ease: number,
       easeWhenMouseWheel: boolean,
       easeWhenJump: boolean,
-      useDefaultSkin: boolean,
-      onDragStartCallback: function,
-      onDragCallback: function,
-      onDragEndCallback: function,
-      onMouseWheelCallback: function,
-      onActiveScrollCallback: function,
+      cssProperty: string,
+      bouncing: boolean,
+      useDefaultSkin: boolean
     }
  */
 jomv3.fx.DummyScrollBar = function(outerElement, innerElement, container, direction, options) {
@@ -198,17 +195,10 @@ jomv3.fx.DummyScrollBar = function(outerElement, innerElement, container, direct
 
   this.direction = direction;
 
-  this._animProps = {ease: (options.ease || .4), end:0, last:0, current:0, scrollProp:''};
   this._easeWhenMouseWheel = options.easeWhenMouseWheel || false;
   this._easeWhenJump = options.easeWhenJump || false;
 
   this._isAnimating = false;
-
-  this._onMouseWheelCallback = options.onMouseWheelCallback;
-  this._onDragStartCallback = options.onDragStartCallback;
-  this._onDragCallback = options.onDragCallback;
-  this._onDragEndCallback = options.onDragEndCallback;
-  this._onActiveScrollCallback = options.onActiveScrollCallback;
 
   // set layout position, and optionally fallback
   // to default layout position:
@@ -257,7 +247,8 @@ jomv3.fx.DummyScrollBar = function(outerElement, innerElement, container, direct
     'left': cssLeft,
     'top': cssTop,
     'bottom': cssBottom,
-    'right': cssRight
+    'right': cssRight,
+    'overflow': 'hidden'
   });
 
   goog.style.setStyle(this.slider, {
@@ -300,7 +291,8 @@ jomv3.fx.DummyScrollBar = function(outerElement, innerElement, container, direct
   this.onResize();
 
   // add event listener
-  goog.events.listen(this.outerElement, goog.events.EventType.SCROLL, this.onScroll, false, this);
+  goog.events.listen(this, jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL, this.onActiveScroll, false, this);
+  goog.events.listen(this, jomv3.fx.DummyScrollBar.EventType.PASSIVE_SCROLL, this.onPassiveScroll, false, this);
   goog.events.listen(this.dragger, goog.fx.Dragger.EventType.START, this.onDragStart, false, this);
   goog.events.listen(this.dragger, goog.fx.Dragger.EventType.DRAG, this.onDrag, false, this);
   goog.events.listen(this.dragger, goog.fx.Dragger.EventType.END, this.onDragEnd, false, this);
@@ -316,6 +308,13 @@ jomv3.fx.DummyScrollBar.prototype.disposeInternal = function() {
   goog.base(this, 'disposeInternal');
 
   this.stopAnimating();
+
+  goog.events.unlisten(this, jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL, this.onActiveScroll, false, this);
+  goog.events.unlisten(this, jomv3.fx.DummyScrollBar.EventType.PASSIVE_SCROLL, this.onPassiveScroll, false, this);
+  goog.events.unlisten(this.dragger, goog.fx.Dragger.EventType.START, this.onDragStart, false, this);
+  goog.events.unlisten(this.dragger, goog.fx.Dragger.EventType.DRAG, this.onDrag, false, this);
+  goog.events.unlisten(this.dragger, goog.fx.Dragger.EventType.END, this.onDragEnd, false, this);
+  goog.events.unlisten(this.slider, ['mousedown', 'touchstart'], this.onDownSlider, false, this);
 
   this.dragger.dispose();
 
@@ -339,35 +338,23 @@ jomv3.fx.DummyScrollBar.prototype.isScrolling = function() {
 };
 
 
+jomv3.fx.DummyScrollBar.prototype.getScrollPosition = function() {
+  
+};
+
 /**
  * Determines whether the scroller had hit the end along a given direction
  */
 jomv3.fx.DummyScrollBar.prototype.canScrollFurther = function(delta) {
-  // normalize direction to 1 or -1
-  var dir = delta/Math.abs(delta);
+};
 
-  if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    if(dir === -1) {
-      // scroll right
-      return (this.outerElement.scrollLeft < this.outerElement.scrollWidth - this.outerElement.offsetWidth);
-    }else {
-      // scroll left
-      return (this.outerElement.scrollLeft > 0);
-    }
-  }else {
-    if(dir === -1) {
-      // scroll down
-      return (this.outerElement.scrollTop < this.outerElement.scrollHeight - this.outerElement.offsetHeight);
-    }else {
-      // scroll up
-      return (this.outerElement.scrollTop > 0);
-    }
-  }
+
+jomv3.fx.DummyScrollBar.prototype.startAnimating = function() {
+  this._isAnimating = true;
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.stopAnimating = function() {
-  goog.fx.anim.unregisterAnimation(this);
   this._isAnimating = false;
 };
 
@@ -392,118 +379,49 @@ jomv3.fx.DummyScrollBar.prototype.setDimensions = function(newUserOuterLength, n
 
 
 jomv3.fx.DummyScrollBar.prototype.scrollTo = function(scrollPosition, animate) {
-  if(animate === true) {
-
-    this._animProps.end = scrollPosition;
-
-    if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-      this._animProps.scrollProp = 'scrollLeft';
-      this._animProps.last = this.outerElement.scrollLeft;
-      this._animProps.current = this._animProps.last;
-    }else {
-      this._animProps.scrollProp = 'scrollTop';
-      this._animProps.last = this.outerElement.scrollTop;
-      this._animProps.current = this._animProps.last;
-    }
-
-    goog.fx.anim.registerAnimation(this);
-    this.onAnimationFrame();
-
-  }else {
-
-    if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-      this.outerElement.scrollLeft = scrollPosition;
-    }else {
-      this.outerElement.scrollTop = scrollPosition;
-    }
-
-  }
+  // dispatch scroll event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL);
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.scrollBy = function(delta, animate) {
-  if(animate === true) {
+  // dispatch scroll event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL);
+};
 
-    if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-      this._animProps.scrollProp = 'scrollLeft';
-      this._animProps.end = this.outerElement.scrollLeft + delta;
-      this._animProps.last = this.outerElement.scrollLeft;
-      this._animProps.current = this._animProps.last;
-    }else {
-      this._animProps.scrollProp = 'scrollTop';
-      this._animProps.end = this.outerElement.scrollTop + delta;
-      this._animProps.last = this.outerElement.scrollTop;
-      this._animProps.current = this._animProps.last;
-    }
 
-    goog.fx.anim.registerAnimation(this);
-    this.onAnimationFrame();
+jomv3.fx.DummyScrollBar.prototype.onActiveScroll = function(e) {
+};
 
-  }else {
 
-    if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-      this.outerElement.scrollLeft += delta;
-      return this.outerElement.scrollLeft;
-    }else {
-      this.outerElement.scrollTop += delta;
-      return this.outerElement.scrollTop;
-    }
-
-  }
+jomv3.fx.DummyScrollBar.prototype.onPassiveScroll = function(e) {
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.onDragStart = function(e) {
   goog.dom.classes.add(this.handle, 'down');
 
-  if(this._onDragStartCallback) {
-    this._onDragStartCallback.call();
-  }
+  this.stopAnimating();
 
-  if(this._onActiveScrollCallback) {
-    this._onActiveScrollCallback.call();
-  }
+  // dispatch drag start event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.DRAG_START);
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.onDragEnd = function(e) {
   goog.dom.classes.remove(this.handle, 'down');
 
-  if(this._onDragEndCallback) {
-    this._onDragEndCallback.call();
-  }
+  // dispatch drag end event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.DRAG_END);
 };
 
 
 jomv3.fx.DummyScrollBar.prototype.onDrag = function(e) {
-  var innerElementLength;
-  if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    innerElementLength = this._innerSize.width;
-  }else {
-    innerElementLength = this._innerSize.height;
-  }
+  // dispatch drag move event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.DRAG_MOVE);
 
-  var scrollPosition;
-  if(this.isHorizontalLayout) {
-    scrollPosition = innerElementLength * (e.left / this._sliderSize.width);
-  }else {
-    scrollPosition = innerElementLength * (e.top / this._sliderSize.height);
-  }
-
-  if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    this.outerElement.scrollLeft = scrollPosition;
-  }else {
-    this.outerElement.scrollTop = scrollPosition;
-  }
-
-  // external callback
-  if(this._onDragCallback) {
-    this._onDragCallback.call();
-  }
-
-  if(this._onActiveScrollCallback) {
-    this._onActiveScrollCallback.call();
-  }
+  // dispatch active scroll event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL);
 };
 
 
@@ -541,40 +459,6 @@ jomv3.fx.DummyScrollBar.prototype.onDownSlider = function(e) {
   }
 
   this.scrollTo(scrollPosition, this._easeWhenJump);
-
-  // external callback
-  if(this._onActiveScrollCallback) {
-    this._onActiveScrollCallback.call();
-  }
-};
-
-
-jomv3.fx.DummyScrollBar.prototype.onScroll = function(e) {
-  if(this.isDragging()) return;
-
-  var innerElementLength;
-  if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    innerElementLength = this._innerSize.width;
-  }else {
-    innerElementLength = this._innerSize.height;
-  }
-
-  var scrollPosition;
-  var handlePosition;
-
-  if(this.direction === jomv3.fx.DummyScrollBar.Direction.HORIZONTAL) {
-    scrollPosition = this.outerElement.scrollLeft;
-  }else {
-    scrollPosition = this.outerElement.scrollTop;
-  }
-
-  if(this.isHorizontalLayout) {
-    handlePosition = this._sliderSize.width * (scrollPosition / innerElementLength);
-    goog.style.setPosition(this.handle, handlePosition, 0);
-  }else {
-    handlePosition = this._sliderSize.height * (scrollPosition / innerElementLength);
-    goog.style.setPosition(this.handle, 0, handlePosition);
-  }
 };
 
 
@@ -597,33 +481,11 @@ jomv3.fx.DummyScrollBar.prototype.onMouseWheel = function(e) {
 
   this.scrollBy(-delta * steps, this._easeWhenMouseWheel);
 
-  // external callback
-  if(this._onMouseWheelCallback) {
-    this._onMouseWheelCallback.call();
-  }
+  // dispatch mousewheel event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.MOUSEWHEEL);
 
-  if(this._onActiveScrollCallback) {
-    this._onActiveScrollCallback.call();
-  }
-};
-
-
-jomv3.fx.DummyScrollBar.prototype.onAnimationFrame = function(now) {
-  this._isAnimating = true;
-
-  var delta = (this._animProps.end - this.outerElement[this._animProps.scrollProp]) * this._animProps.ease;
-  var scrollPosition = this.scrollBy(delta);
-
-  if(Math.abs(scrollPosition - this._animProps.last) < 1) {
-    this.stopAnimating();
-  }
-
-  this._animProps.last = scrollPosition;
-
-  // external callback
-  if(this._onActiveScrollCallback) {
-    this._onActiveScrollCallback.call();
-  }
+  // dispatch active scroll event
+  this.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL);
 };
 
 
@@ -636,20 +498,20 @@ jomv3.fx.DummyScrollBar.prototype.onResize = function(e) {
   this._scrollBarSize = goog.style.getSize(this.domElement);
   this._sliderSize = goog.style.getSize(this.slider);
   this._handleSize = goog.style.getSize(this.handle);
-
-  if(this.isHorizontalLayout) {
-    this._dragRect.width = this._scrollBarSize.width - this._handleSize.width;
-  }else {
-    this._dragRect.height = this._scrollBarSize.height - this._handleSize.height;
-  }
-
-  this.dragger.setLimits(this._dragRect);
-
-  this.onScroll();
 };
 
 
 jomv3.fx.DummyScrollBar.Manager = jomv3.fx.DummyScrollBarManager.getInstance();
+
+
+jomv3.fx.DummyScrollBar.EventType = {
+  ACTIVE_SCROLL: 'active_scroll',
+  PASSIVE_SCROLL: 'passive_scroll',
+  MOUSEWHEEL: 'mousewheel',
+  DRAG_START: 'drag_start',
+  DRAG_MOVE: 'drag_move',
+  DRAG_END: 'drag_end'
+};
 
 
 jomv3.fx.DummyScrollBar.Direction = {

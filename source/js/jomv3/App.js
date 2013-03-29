@@ -9,8 +9,10 @@ goog.require('jomv3.controllers.NavigationController');
 goog.require('jomv3.views.elements.RoundThumb');
 goog.require('jomv3.views.elements.UISpinner');
 goog.require('jomv3.fx.FermatSpiral');
-goog.require('jomv3.fx.DummyScrollBar');
-
+goog.require('jomv3.fx.CssScrollBar');
+goog.require('jomv3.fx.DefaultScrollBar');
+goog.require('jomv3.fx.ScrollableElement');
+goog.require('jomv3.fx.Scroller');
 
 jomv3.App = function () {
 /*
@@ -96,7 +98,8 @@ jomv3.App = function () {
 	var draggableCursor = jomv3.utils.addDraggableCursor(document.body);
 	//draggableCursor.remove();
 */
-	//
+
+	// dom element 1
 	this.container = goog.dom.createDom('div', null, [
 			this.outerDom = goog.dom.createDom('div', 'outer', [
 				this.innerDom = goog.dom.createDom('div', 'inner')
@@ -104,7 +107,7 @@ jomv3.App = function () {
 		]);
 	
 	goog.style.setStyle(this.container, {'width': '100%', 'height': '100%'});
-	goog.style.setStyle(this.outerDom, {'width': '80%', 'height': '80%'});
+	goog.style.setStyle(this.outerDom, {'width': '80%', 'height': '80%', 'overflow': 'hidden'});
 
 	var numInnerBoxes = 100;
 	var innerBoxWidth = 200;
@@ -118,29 +121,39 @@ jomv3.App = function () {
 		goog.dom.appendChild(this.innerDom, div);
 	}
 
-	goog.dom.appendChild(document.body, this.container);
+	goog.dom.appendChild(document.body, this.container);	
 
-	this.scrollBarV = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
+	// scrollable element 1
+	var options = {
+		'scrollingX': true,
+		'scrollingY': true
+	};
+
+	var scrollableElement = new jomv3.fx.ScrollableElement(this.outerDom, this.innerDom, options, jomv3.fx.ScrollableElement.Implementation.SCROLL);
+
+	// default scroll bar for element 1
+	var scrollBarV = new jomv3.fx.DefaultScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
 		layout: 'right',
 		sliderWidth: 50,
 		sliderHeight: '100%',
-		easeWhenJump: true,
-		onActiveScrollCallback: goog.bind(onActiveDummyScroll, this)
+		easeWhenJump: true
 	});
 
-	goog.style.setStyle(this.scrollBarV.domElement, 'position', 'absolute');
+	goog.style.setStyle(scrollBarV.domElement, 'position', 'absolute');
 
-	this.scrollBarH = new jomv3.fx.DummyScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.HORIZONTAL, {
+	var scrollBarH = new jomv3.fx.DefaultScrollBar(this.outerDom, this.innerDom, this.container, jomv3.fx.DummyScrollBar.Direction.HORIZONTAL, {
 		layout: 'bottom',
 		sliderWidth: '100%',
 		sliderHeight: 50,
-		easeWhenJump: true,
-		onActiveScrollCallback: goog.bind(onActiveDummyScroll, this)
+		easeWhenJump: true
 	});
 
-	goog.style.setStyle(this.scrollBarH.domElement, 'position', 'absolute');
+	goog.style.setStyle(scrollBarH.domElement, 'position', 'absolute');
 
-	//
+	// scroller
+	var scroller = new jomv3.fx.Scroller(scrollableElement, [scrollBarV, scrollBarH]);
+
+	// element 2
 	this.nested = goog.dom.createDom('div', null, [
 		this.outerNestedDom = goog.dom.createDom('div', 'outer', [
 			this.innerNestedDom = goog.dom.createDom('div', 'inner')
@@ -151,78 +164,30 @@ jomv3.App = function () {
 	goog.style.setStyle(this.innerNestedDom, {'width': '100%', 'height': '1000px', 'background': '-webkit-linear-gradient(green, blue)'});
 
 	goog.dom.appendChild(this.innerDom, this.nested);
+	//goog.dom.appendChild(document.body, this.nested);
 
-	this.nestedScrollBarV = new jomv3.fx.DummyScrollBar(this.outerNestedDom, this.innerNestedDom, this.nested, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
+	// scrollable element 2
+	var options = {
+		'scrollingX': false,
+		'scrollingY': true
+	};
+
+	var scrollableElement = new jomv3.fx.ScrollableElement(this.outerNestedDom, this.innerNestedDom, options, jomv3.fx.ScrollableElement.Implementation.SCROLL);
+
+	// css scroll bar for element 2
+	var nestedScrollBarV = new jomv3.fx.DefaultScrollBar(this.outerNestedDom, this.innerNestedDom, this.nested, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
 		layout: 'right',
 		sliderWidth: 20,
+		bouncing: true,
 		ease: .2,
 		easeWhenMouseWheel: true,
 		easeWhenJump: true
 	});
 
-	goog.style.setStyle(this.nestedScrollBarV.domElement, 'position', 'absolute');
+	goog.style.setStyle(nestedScrollBarV.domElement, 'position', 'absolute');
 
-  function onActiveDummyScroll() {
-  	this.zyngaScroller.scrollTo(this.outerDom.scrollLeft, this.outerDom.scrollTop);
-  }
-
-  function onDown(e) {
-  	if(jomv3.fx.DummyScrollBar.Manager.isScrolling()) return false;
-
-	  var ev = e.getBrowserEvent();
-	  var touches = goog.userAgent.MOBILE ? ev.touches : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
-
-	  this.zyngaScroller.doTouchStart(touches, ev.timeStamp);
-
-	  goog.events.listen(document, ['touchmove', 'mousemove'], onMove, false, this);
-	  goog.events.listen(document, ['touchend', 'mouseup'], onUp, false, this);
-
-	  this.scrollBarH.stopAnimating();
-	  this.scrollBarV.stopAnimating();
-  };
-
-  function onMove(e) {
-	  var ev = e.getBrowserEvent();
-	  var touches = goog.userAgent.MOBILE ? ev.touches : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
-
-	  this.zyngaScroller.doTouchMove(touches, ev.timeStamp);
-  };
-
-  function onUp(e) {
-	  var ev = e.getBrowserEvent();
-	  this.zyngaScroller.doTouchEnd(ev.timeStamp);
-
-	  goog.events.unlisten(document, ['touchmove', 'mousemove'], onMove, false, this);
-	  goog.events.unlisten(document, ['touchend', 'mouseup'], onUp, false, this);
-  };
-
-  var zyngaScrollerOptions = {
-  	locking: true
-  };
-
-  this.zyngaScroller = new Scroller(goog.bind(function(left, top) {
-  	this.outerDom.scrollLeft = left;
-  	this.outerDom.scrollTop = top;
-  }, this), zyngaScrollerOptions);
- 
-  goog.events.listen(this.outerDom, ['touchstart', 'mousedown'], onDown, false, this);
-
-  var self = this;
-
-	var outerDomSize = goog.style.getSize(self.outerDom);
-	var innerDomSize = goog.style.getSize(self.innerDom);
-	self.zyngaScroller.setDimensions(outerDomSize.width, outerDomSize.height, innerDomSize.width, innerDomSize.height);
-
-	//
-	document.addEventListener('touchstart', function(e) {
-		e.preventDefault();
-	});
-
-	window.addEventListener('resize', function(e) {
-		var outerDomSize = goog.style.getSize(self.outerDom);
-		var innerDomSize = goog.style.getSize(self.innerDom);
-		self.zyngaScroller.setDimensions(outerDomSize.width, outerDomSize.height, innerDomSize.width, innerDomSize.height);
-	});
+	// scroller
+	var scroller = new jomv3.fx.Scroller(scrollableElement, nestedScrollBarV);
 };
 
 
