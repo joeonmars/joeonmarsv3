@@ -126,7 +126,8 @@ jomv3.App = function () {
 	// scrollable element 1
 	var options = {
 		'scrollingX': true,
-		'scrollingY': true
+		'scrollingY': true,
+		'locking': false
 	};
 
 	var scrollableElement = new jomv3.fx.ScrollableElement(this.outerDom, this.innerDom, options, jomv3.fx.ScrollableElement.Implementation.SCROLL);

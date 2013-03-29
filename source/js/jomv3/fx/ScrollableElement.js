@@ -9,6 +9,7 @@ goog.provide('jomv3.fx.ScrollableElementManager');
 goog.require('goog.array');
 goog.require('goog.events.EventType');
 goog.require('goog.dom');
+goog.require('goog.math');
 goog.require('goog.userAgent');
 
 /**
@@ -76,7 +77,9 @@ jomv3.fx.ScrollableElementManager.prototype.onMove = function(e) {
     var isScrollingX, isScrollingY;
 
     // determine direction by the scrolled points
-    if(Math.abs(this._scrollPoints[0][0] - this._scrollPoints[1][0]) > Math.abs(this._scrollPoints[0][1] - this._scrollPoints[1][1])) {
+    var angle = goog.math.angle(this._scrollPoints[0][0], this._scrollPoints[0][1], this._scrollPoints[1][0], this._scrollPoints[1][1]);
+
+    if((angle < 45 || angle > 315) || (angle > 135 && angle < 225)) {
       // scrolling x
       isScrollingX = true;
     }else {
