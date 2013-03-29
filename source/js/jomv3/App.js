@@ -172,10 +172,10 @@ jomv3.App = function () {
 		'scrollingY': true
 	};
 
-	var scrollableElement = new jomv3.fx.ScrollableElement(this.outerNestedDom, this.innerNestedDom, options, jomv3.fx.ScrollableElement.Implementation.SCROLL);
+	var scrollableElement = new jomv3.fx.ScrollableElement(this.outerNestedDom, this.innerNestedDom, options, jomv3.fx.ScrollableElement.Implementation.POSITION);
 
 	// css scroll bar for element 2
-	var nestedScrollBarV = new jomv3.fx.DefaultScrollBar(this.outerNestedDom, this.innerNestedDom, this.nested, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
+	var nestedScrollBarV = new jomv3.fx.CssScrollBar(this.outerNestedDom, this.innerNestedDom, this.nested, jomv3.fx.DummyScrollBar.Direction.VERTICAL, {
 		layout: 'right',
 		sliderWidth: 20,
 		bouncing: true,

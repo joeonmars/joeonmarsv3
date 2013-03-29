@@ -19,6 +19,8 @@ jomv3.fx.ScrollableElementManager = function() {
 
   this._scrollPoints = [];
 
+  this._isDown = false;
+
   goog.events.listen(document, jomv3.fx.ScrollableElementManager.EventType.DOWN, this.onDown, false, this);
 };
 goog.addSingletonGetter(jomv3.fx.ScrollableElementManager);
@@ -49,6 +51,9 @@ jomv3.fx.ScrollableElementManager.prototype.has = function(scrollableElement) {
 
 
 jomv3.fx.ScrollableElementManager.prototype.onDown = function(e) {
+  if(this._isDown) return false;
+  else this._isDown = true;
+
   e.preventDefault();
 
   var ev = e.getBrowserEvent();
@@ -101,13 +106,17 @@ jomv3.fx.ScrollableElementManager.prototype.onMove = function(e) {
       }
     }, this);
 
-    // sim up event to remove event listeners
-    this.onUp(e);
+    // reset scroll points and remove onMove listeners to finish move
+    this._scrollPoints = [];
+    goog.events.unlisten(document, jomv3.fx.ScrollableElementManager.EventType.MOVE, this.onMove, false, this);
   }
 };
 
 
 jomv3.fx.ScrollableElementManager.prototype.onUp = function(e) {
+  if(!this._isDown) return false;
+  else this._isDown = false;
+
   this._scrollPoints = [];
   goog.events.unlisten(document, jomv3.fx.ScrollableElementManager.EventType.MOVE, this.onMove, false, this);
   goog.events.unlisten(document, jomv3.fx.ScrollableElementManager.EventType.UP, this.onUp, false, this);
@@ -241,7 +250,7 @@ jomv3.fx.ScrollableElement.prototype.renderScroll = function(left, top) {
  */
 jomv3.fx.ScrollableElement.prototype.onDown = function(e) {
 	var ev = e.getBrowserEvent();
-  var touches = goog.userAgent.MOBILE ? ev.touches : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
+  var touches = goog.userAgent.MOBILE ? [ev.touches[0]] : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
 
   this.scroller.doTouchStart(touches, ev.timeStamp);
 
@@ -255,7 +264,7 @@ jomv3.fx.ScrollableElement.prototype.onDown = function(e) {
  */
 jomv3.fx.ScrollableElement.prototype.onMove = function(e) {
   var ev = e.getBrowserEvent();
-  var touches = goog.userAgent.MOBILE ? ev.touches : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
+  var touches = goog.userAgent.MOBILE ? [ev.touches[0]] : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
 
   this.scroller.doTouchMove(touches, ev.timeStamp);
 };
@@ -266,6 +275,11 @@ jomv3.fx.ScrollableElement.prototype.onMove = function(e) {
  */
 jomv3.fx.ScrollableElement.prototype.onUp = function(e) {
   var ev = e.getBrowserEvent();
+
+  if(goog.userAgent.MOBILE && ev.touches.length > 0) {
+    return false;
+  }
+
   this.scroller.doTouchEnd(ev.timeStamp);
 
   goog.events.unlisten(document, jomv3.fx.ScrollableElementManager.EventType.MOVE, this.onMove, false, this);

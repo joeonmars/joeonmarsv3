@@ -205,10 +205,6 @@ jomv3.fx.CssScrollBar.prototype.scrollTo = function(scrollPosition, animate) {
     goog.style.setPosition(this.handle, endX, endY);
     this.setCssPosition();
 
-    // external callback
-    if(this._onActiveScrollCallback) {
-      this._onActiveScrollCallback.call();
-    }
   }
 };
 
@@ -251,11 +247,6 @@ jomv3.fx.CssScrollBar.prototype.scrollBy = function(delta, animate) {
     goog.style.setPosition(this.handle, endX, endY);
     this.setCssPosition();
     this.onSlideEnd({x:endX, y:endY});
-
-    // external callback
-    if(this._onActiveScrollCallback) {
-      this._onActiveScrollCallback.call();
-    }
 
   }
 };
