@@ -190,8 +190,20 @@ jomv3.fx.ScrollableElement.prototype.create = function() {
 	}
 
 	this.scroller = new Scroller(goog.bind(function(left, top) {
+    // render scrolling position
     renderFunc.call(this, left, top);
+    
+    // dispatch a scroll event
     this.dispatchEvent(jomv3.fx.ScrollableElement.EventType.SCROLL);
+
+    if(this.scroller.__isTracking || this.scroller.__isDecelerating !== false) {
+      // if is dragging or decelerating after dragging, dispatch an active scroll event
+      this.dispatchEvent(jomv3.fx.ScrollableElement.EventType.ACTIVE_SCROLL);
+    }else {
+      // otherwise dispatch a passive scroll event
+      this.dispatchEvent(jomv3.fx.ScrollableElement.EventType.PASSIVE_SCROLL);
+    }
+
   }, this), this._options);
 
 	this.setSize(goog.style.getSize(this.outerElement), goog.style.getSize(this.innerElement));
@@ -294,7 +306,9 @@ jomv3.fx.ScrollableElement.Manager = jomv3.fx.ScrollableElementManager.getInstan
 
 
 jomv3.fx.ScrollableElement.EventType = {
-  SCROLL: 'scroll'
+  SCROLL: 'scroll',
+  ACTIVE_SCROLL: 'active_scroll',
+  PASSIVE_SCROLL: 'passive_scroll'
 };
 
 

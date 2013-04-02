@@ -118,7 +118,7 @@ jomv3.fx.CssScrollBar.prototype.setCssPosition = function() {
   }
 
   if(this.isHorizontalLayout) {
-    scrollPosition = handlePos.x / this._sliderSize.width * innerElementLength;
+    scrollPosition = - handlePos.x / this._sliderSize.width * innerElementLength;
 
     if(this._cssProperty === jomv3.fx.CssScrollBar.CssProperty.POSITION) {
       goog.style.setStyle(this.innerElement, 'left', scrollPosition + 'px');

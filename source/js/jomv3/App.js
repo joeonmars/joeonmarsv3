@@ -107,7 +107,7 @@ jomv3.App = function () {
 		]);
 	
 	goog.style.setStyle(this.container, {'width': '100%', 'height': '100%'});
-	goog.style.setStyle(this.outerDom, {'width': '80%', 'height': '80%', 'overflow': 'hidden'});
+	goog.style.setStyle(this.outerDom, {'width': '80%', 'height': '80%', 'overflow': 'hidden', 'outline': '1px solid red'});
 
 	var numInnerBoxes = 100;
 	var innerBoxWidth = 200;

@@ -31,7 +31,7 @@ jomv3.fx.Scroller.prototype.create = function() {
     goog.events.listen(scrollBar, jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL, this.onScrollBarActiveScroll, false ,this);
   }, this);
 
-  goog.events.listen(this._scrollableElement, jomv3.fx.ScrollableElement.EventType.SCROLL, this.onScrollableElementScroll, false ,this);
+  goog.events.listen(this._scrollableElement, jomv3.fx.ScrollableElement.EventType.ACTIVE_SCROLL, this.onScrollableElementActiveScroll, false ,this);
 };
 
 
@@ -42,7 +42,7 @@ jomv3.fx.Scroller.prototype.disposeInternal = function() {
     goog.events.unlisten(scrollBar, jomv3.fx.DummyScrollBar.EventType.ACTIVE_SCROLL, this.onScrollBarActiveScroll, false ,this);
   }, this);
 
-  goog.events.unlisten(this._scrollableElement, jomv3.fx.ScrollableElement.EventType.SCROLL, this.onScrollableElementScroll, false ,this);
+  goog.events.unlisten(this._scrollableElement, jomv3.fx.ScrollableElement.EventType.ACTIVE_SCROLL, this.onScrollableElementActiveScroll, false ,this);
 };
 
 
@@ -53,7 +53,7 @@ jomv3.fx.Scroller.prototype.onScrollBarActiveScroll = function(e) {
 };
 
 
-jomv3.fx.Scroller.prototype.onScrollableElementScroll = function(e) {
+jomv3.fx.Scroller.prototype.onScrollableElementActiveScroll = function(e) {
   goog.array.forEach(this._scrollBars, function(scrollBar) {
     scrollBar.dispatchEvent(jomv3.fx.DummyScrollBar.EventType.PASSIVE_SCROLL);
   }, this);
