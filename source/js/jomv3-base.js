@@ -10,7 +10,7 @@ goog.addDependency("../jomv3/main.js", ["jomv3.main"], ["goog.userAgent.product"
     goog.addDependency("../jomv3/fx/CssScrollBar.js", ["jomv3.fx.CssScrollBar"], ["goog.fx.dom.Slide","goog.fx.easing","goog.fx.Animation","goog.style","jomv3.fx.DummyScrollBar"]);
       goog.addDependency("../jomv3/fx/DummyScrollBar.js", ["jomv3.fx.DummyScrollBarManager","jomv3.fx.DummyScrollBar"], ["goog.array","goog.events.EventType","goog.events.MouseWheelHandler","goog.dom","goog.dom.ViewportSizeMonitor","goog.userAgent","goog.dom","goog.dom.classes","goog.events.EventTarget","goog.events.MouseWheelHandler","goog.fx.anim","goog.fx.Dragger","goog.math.Size","goog.math.Rect","goog.style"]);
     goog.addDependency("../jomv3/fx/DefaultScrollBar.js", ["jomv3.fx.DefaultScrollBar"], ["jomv3.fx.DummyScrollBar"]);
-    goog.addDependency("../jomv3/fx/ScrollableElement.js", ["jomv3.fx.ScrollableElementManager","jomv3.fx.ScrollableElement"], ["goog.array","goog.events.EventType","goog.dom","goog.math","goog.userAgent","goog.dom","goog.events","goog.math","goog.userAgent"]);
+    goog.addDependency("../jomv3/fx/ScrollableElement.js", ["jomv3.fx.ScrollableElementManager","jomv3.fx.ScrollableElement"], ["goog.array","goog.dom","goog.dom.ViewportSizeMonitor","goog.events.EventType","goog.math","goog.userAgent","goog.dom","goog.events","goog.math","goog.userAgent"]);
     goog.addDependency("../jomv3/fx/Scroller.js", ["jomv3.fx.Scroller"], ["goog.array","goog.dom","goog.events","goog.userAgent","jomv3.fx.ScrollableElement","jomv3.fx.DefaultScrollBar","jomv3.fx.CssScrollBar"]);
   goog.addDependency("../jomv3/utils.js", ["jomv3.Utils"], ["goog.dom","goog.dom.classes","goog.fx.css3","goog.fx.Transition","goog.style","goog.style.cursor","goog.userAgent","goog.math"]);
 

@@ -7,8 +7,9 @@
 goog.provide('jomv3.fx.ScrollableElementManager');
 
 goog.require('goog.array');
-goog.require('goog.events.EventType');
 goog.require('goog.dom');
+goog.require('goog.dom.ViewportSizeMonitor');
+goog.require('goog.events.EventType');
 goog.require('goog.math');
 goog.require('goog.userAgent');
 
@@ -23,6 +24,9 @@ jomv3.fx.ScrollableElementManager = function() {
   this._isDown = false;
 
   goog.events.listen(document, jomv3.fx.ScrollableElementManager.EventType.DOWN, this.onDown, false, this);
+
+  this._viewportSizeMonitor = new goog.dom.ViewportSizeMonitor();
+  goog.events.listen(this._viewportSizeMonitor, goog.events.EventType.RESIZE, this.onResize, false, this);
 };
 goog.addSingletonGetter(jomv3.fx.ScrollableElementManager);
 
@@ -126,6 +130,13 @@ jomv3.fx.ScrollableElementManager.prototype.onUp = function(e) {
 };
 
 
+jomv3.fx.ScrollableElementManager.prototype.onResize = function(e) {
+  goog.array.find(this._scrollableElements, function(scrollableElement) {
+    scrollableElement.onResize();
+  });
+};
+
+
 jomv3.fx.ScrollableElementManager.EventType = {
   DOWN: (goog.userAgent.MOBILE ? 'touchstart' : 'mousedown'),
   MOVE: (goog.userAgent.MOBILE ? 'touchmove' : 'mousemove'),
@@ -151,13 +162,10 @@ goog.require('goog.userAgent');
 jomv3.fx.ScrollableElement = function(outerElement, innerElement, options, implementation) {
   goog.base(this);
 
-  this._options = options || {
-    'scrollingX': true,
-    'scrollingY': true
-  };
+  this._options = options || {};
 
-  this.isScrollXEnabled = this._options['scrollingX'];
-  this.isScrollYEnabled = this._options['scrollingY'];
+  this.isScrollXEnabled = false;
+  this.isScrollYEnabled = false;
 
   this.outerElement = outerElement;
   this.innerElement = innerElement;
@@ -173,29 +181,26 @@ goog.inherits(jomv3.fx.ScrollableElement, goog.events.EventTarget);
 
 
 jomv3.fx.ScrollableElement.prototype.create = function() {
-	var renderFunc;
-	switch(this._implementation) {
-		case jomv3.fx.ScrollableElement.Implementation.POSITION:
-		renderFunc = this.renderCSSPosition;
-		break;
+  var renderFunc;
+  switch(this._implementation) {
+    case jomv3.fx.ScrollableElement.Implementation.POSITION:
+    renderFunc = this.renderCSSPosition;
+    break;
 
-		case jomv3.fx.ScrollableElement.Implementation.TRANSLATE:
+    case jomv3.fx.ScrollableElement.Implementation.TRANSLATE:
     case jomv3.fx.ScrollableElement.Implementation.TRANSLATE_3D:
-		renderFunc = this.renderCSSTransform;
-		break;
+    renderFunc = this.renderCSSTransform;
+    break;
 
-		case jomv3.fx.ScrollableElement.Implementation.SCROLL:
-		renderFunc = this.renderScroll;
-		break;
-	}
+    case jomv3.fx.ScrollableElement.Implementation.SCROLL:
+    renderFunc = this.renderScroll;
+    break;
+  }
 
-	this.scroller = new Scroller(goog.bind(function(left, top) {
+  this.scroller = new Scroller(goog.bind(function(left, top) {
     // render scrolling position
     renderFunc.call(this, left, top);
     
-    // dispatch a scroll event
-    this.dispatchEvent(jomv3.fx.ScrollableElement.EventType.SCROLL);
-
     if(this.scroller.__isTracking || this.scroller.__isDecelerating !== false) {
       // if is dragging or decelerating after dragging, dispatch an active scroll event
       this.dispatchEvent(jomv3.fx.ScrollableElement.EventType.ACTIVE_SCROLL);
@@ -206,53 +211,61 @@ jomv3.fx.ScrollableElement.prototype.create = function() {
 
   }, this), this._options);
 
-	this.setSize(goog.style.getSize(this.outerElement), goog.style.getSize(this.innerElement));
+  this.setSize(goog.style.getSize(this.outerElement), goog.style.getSize(this.innerElement));
 
-	// register this instance to manager
+  this.isScrollXEnabled = this.scroller.options.scrollingX;
+  this.isScrollYEnabled = this.scroller.options.scrollingY;
+
+  // register this instance to manager
   jomv3.fx.ScrollableElement.Manager.add(this);
 };
 
 
 jomv3.fx.ScrollableElement.prototype.disposeInternal = function() {
-	goog.base(this, 'disposeInternal');
+  goog.base(this, 'disposeInternal');
 
-	// unregister this instance to manager
+  // unregister this instance to manager
   jomv3.fx.ScrollableElement.Manager.remove(this);
 };
 
 
 jomv3.fx.ScrollableElement.prototype.setSize = function(outerSize, innerSize) {
-	this.scroller.setDimensions(outerSize.width, outerSize.height, innerSize.width, innerSize.height);
+  this.scroller.setDimensions(outerSize.width, outerSize.height, innerSize.width, innerSize.height);
 };
 
 
-jomv3.fx.ScrollableElement.prototype.scrollTo = function(x, y) {
-  this.scroller.scrollTo(x, y, false);
+jomv3.fx.ScrollableElement.prototype.scrollTo = function(x, y, animate) {
+  this.scroller.scrollTo(x, y, animate);
+};
+
+
+jomv3.fx.ScrollableElement.prototype.scrollBy = function(x, y, animate) {
+  this.scroller.scrollBy(x, y, animate);
 };
 
 
 /**
- *	An optional render function by CSS left/top position
+ *  An optional render function by CSS left/top position
  */
 jomv3.fx.ScrollableElement.prototype.renderCSSPosition = function(left, top) {
-	goog.style.setPosition(this.innerElement, -left, -top);
+  goog.style.setPosition(this.innerElement, -left, -top);
 };
 
 
 /**
- *	An optional render function by CSS transform
+ *  An optional render function by CSS transform
  */
 jomv3.fx.ScrollableElement.prototype.renderCSSTransform = function(left, top) {
-	if(this._implementation === jomv3.fx.ScrollableElement.Implementation.TRANSLATE_3D) {
-		goog.style.setStyle(this.innerElement, 'transform', 'translate3d(' + -left + 'px, ' + -top + 'px, 0px)');
-	}else {
-		goog.style.setStyle(this.innerElement, 'transform', 'translate(' + -left + 'px, ' + -top + 'px)');
-	}
+  if(this._implementation === jomv3.fx.ScrollableElement.Implementation.TRANSLATE_3D) {
+    goog.style.setStyle(this.innerElement, 'transform', 'translate3d(' + -left + 'px, ' + -top + 'px, 0px)');
+  }else {
+    goog.style.setStyle(this.innerElement, 'transform', 'translate(' + -left + 'px, ' + -top + 'px)');
+  }
 };
 
 
 /**
- *	An optional render function by scrollLeft/scrollTop
+ *  An optional render function by scrollLeft/scrollTop
  */
 jomv3.fx.ScrollableElement.prototype.renderScroll = function(left, top) {
   this.outerElement.scrollLeft = left;
@@ -261,10 +274,10 @@ jomv3.fx.ScrollableElement.prototype.renderScroll = function(left, top) {
 
 
 /**
- *	Down Handler
+ *  Down Handler
  */
 jomv3.fx.ScrollableElement.prototype.onDown = function(e) {
-	var ev = e.getBrowserEvent();
+  var ev = e.getBrowserEvent();
   var touches = goog.userAgent.MOBILE ? [ev.touches[0]] : [{'pageX': ev.clientX, 'pageY': ev.clientY}];
 
   this.scroller.doTouchStart(touches, ev.timeStamp);
@@ -275,7 +288,7 @@ jomv3.fx.ScrollableElement.prototype.onDown = function(e) {
 
 
 /**
- *	Move Handler
+ *  Move Handler
  */
 jomv3.fx.ScrollableElement.prototype.onMove = function(e) {
   var ev = e.getBrowserEvent();
@@ -286,7 +299,7 @@ jomv3.fx.ScrollableElement.prototype.onMove = function(e) {
 
 
 /**
- *	Up Handler
+ *  Up Handler
  */
 jomv3.fx.ScrollableElement.prototype.onUp = function(e) {
   var ev = e.getBrowserEvent();
@@ -302,19 +315,26 @@ jomv3.fx.ScrollableElement.prototype.onUp = function(e) {
 };
 
 
+/**
+ *  Resize Handler
+ */
+jomv3.fx.ScrollableElement.prototype.onResize = function(e) {
+  this.setSize(goog.style.getSize(this.outerElement), goog.style.getSize(this.innerElement));
+};
+
+
 jomv3.fx.ScrollableElement.Manager = jomv3.fx.ScrollableElementManager.getInstance();
 
 
 jomv3.fx.ScrollableElement.EventType = {
-  SCROLL: 'scroll',
   ACTIVE_SCROLL: 'active_scroll',
   PASSIVE_SCROLL: 'passive_scroll'
 };
 
 
 jomv3.fx.ScrollableElement.Implementation = {
-	POSITION: 'position',
-	TRANSLATE: 'translate',
+  POSITION: 'position',
+  TRANSLATE: 'translate',
   TRANSLATE_3D: 'translate_3d',
-	SCROLL: 'scroll'
+  SCROLL: 'scroll'
 };
