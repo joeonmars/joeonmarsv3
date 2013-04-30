@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Joe on Mars</title>
+    <link rel="shortcut icon" href="{front_end_img_path}favicon.ico">
+  </head>
+
+  <body>
+    <h1>Hello, World!!!</h1>
+    <p>
+    This is an excellent way to see our work!!!
+    </p>
+
+    <script>
+      var req = new XMLHttpRequest();
+      req.open("GET",
+               "/news/my-second-news?debug",
+               false);
+      req.send(null);
+      if (req.status == 200) {
+        console.log(req.responseText);
+      }
+    </script>
+  </body>
+</html>
