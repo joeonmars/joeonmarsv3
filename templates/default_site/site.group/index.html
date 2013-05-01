@@ -1,9 +1,16 @@
+<?php
+  // Compilation mode, which must be one of "RAW", "WHITESPACE", "SIMPLE", or "ADVANCED".
+  // The default value is "SIMPLE".
+  $COMPILE_MODE = isset( $_GET['mode'] ) ? $_GET['mode'] : 'SIMPLE';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8">
     <title>Joe on Mars</title>
-    <link rel="shortcut icon" href="{front_end_img_path}favicon.ico">
+    <link rel="shortcut icon" href="{front_end_img_path}/favicon.ico">
   </head>
 
   <body>
@@ -12,15 +19,20 @@
     This is an excellent way to see our work!!!
     </p>
 
+    <!-- third-party -->
+    <script src="{front_end_js_third_party_path}/signals.min.js"></script>
+    <script src="{front_end_js_third_party_path}/crossroads.min.js"></script>
+    <script src="{front_end_js_third_party_path}/modernizr-latest.js"></script>
+    <script src="{front_end_js_third_party_path}/greensock/TweenMax.min.js"></script>
+
+    <!-- project js -->
+    <!--<script src="js/compiled.js"></script>-->
+    <script src="http://localhost:9810/compile?id=joeonmarsv3&mode=<?php echo $COMPILE_MODE ?>"></script>
+
+    <!-- execute the main js-->
     <script>
-      var req = new XMLHttpRequest();
-      req.open("GET",
-               "/news/my-second-news?debug",
-               false);
-      req.send(null);
-      if (req.status == 200) {
-        console.log(req.responseText);
-      }
+      example.main();
     </script>
   </body>
+
 </html>
